@@ -1,0 +1,30 @@
+{
+    "manifest_version": 2,
+    "name": "KOSHIAN delフォームをポップアップで開く",
+    "version": "1.0.2",
+    "description": "delフォームをポップアップで開きます",
+    "icons": {
+        "48": "icons/icon-48.png"
+    },
+    "content_scripts": [
+        {
+            "matches": [
+                "*://*.2chan.net/*/res/*"
+            ],
+            "js": [
+                "res.js"
+            ]
+        }
+    ],
+    "options_ui": {
+        "page": "options.html"
+    },
+    "permissions": [
+        "storage"
+    ],
+    "applications": {
+        "gecko": {
+            "id": "{0454bff9-ddbc-4e52-8840-7a61d65c22f1}"
+        }
+    }
+}
