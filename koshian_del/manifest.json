@@ -28,7 +28,8 @@
     ],
     "applications": {
         "gecko": {
-            "id": "{063FFDE8-45A4-11E8-93C3-23D2F3E0CD91}"
+            "id": "{063FFDE8-45A4-11E8-93C3-23D2F3E0CD91}",
+            "update_url": "https://raw.githubusercontent.com/akoya-tomo/koshian_del_kai/master/updates.json"
         }
     }
 }
