@@ -165,7 +165,7 @@ class Del {
             this.popup.style.right = null;
         }else{
             this.popup.style.left = null;
-            this.popup.style.right = `${clientW - rect.left}px`;
+            this.popup.style.right = `${clientW - scrollX - rect.left}px`;
         }
 
         this.popup.style.top = `${scrollY + rect.top}px`;
