@@ -5,6 +5,7 @@ const DEFAULT_POST_ALERT = false;
 const DEFAULT_USE_CATALOG_NG = false;
 let page_trans = DEFAULT_PAGE_TRANS;
 let post_alert = DEFAULT_POST_ALERT;
+let use_catalog_ng = DEFAULT_USE_CATALOG_NG;
 
 function addFormItem(dest, value, text, checked = false) {
     let id = `del_${value}`;
@@ -179,6 +180,11 @@ class Del {
                 alert(`delを送信しました`);
             }
 
+            if (use_catalog_ng){
+                target.classList.add(DEL_CLASS_NAME);
+                document.dispatchEvent(new CustomEvent("KOSHIAN_del"));
+            }
+
             return true;
         }
     }
@@ -258,6 +264,7 @@ function onError(error) {
 function onSettingGot(result) {
     page_trans = safeGetValue(result.page_trans, DEFAULT_PAGE_TRANS);
     post_alert = safeGetValue(result.post_alert, DEFAULT_POST_ALERT);
+    use_catalog_ng = safeGetValue(result.use_catalog_ng, DEFAULT_USE_CATALOG_NG);
     
     main();
 }
@@ -269,6 +276,7 @@ function onSettingChanged(changes, areaName) {
 
     page_trans = safeGetValue(changes.page_trans.newValue, page_trans);
     post_alert = safeGetValue(changes.post_alert.newValue, post_alert);
+    use_catalog_ng = safeGetValue(changes.use_catalog_ng.newValue, use_catalog_ng);
 }
 
 browser.storage.local.get().then(onSettingGot, onError);
