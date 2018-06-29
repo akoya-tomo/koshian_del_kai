@@ -1,7 +1,7 @@
 {
     "manifest_version": 2,
     "name": "KOSHIAN delフォームをポップアップで開く 改",
-    "version": "1.0.0",
+    "version": "1.0.1",
     "description": "delフォームをポップアップで開きます",
     "icons": {
         "48": "icons/icon-48.png"
@@ -10,11 +10,13 @@
         {
             "exclude_matches": ["*://*.2chan.net/*/res/*","*://*.2chan.net/*/src/*"],
             "matches": ["*://*.2chan.net/*/*"],
-            "js": ["cat.js"]
+            "js": ["cat.js"],
+            "all_frames": true
         },
         {
             "matches": ["*://*.2chan.net/*/res/*"],
-            "js": ["res.js"]
+            "js": ["res.js"],
+            "all_frames": false
         }
     ],
     "background": {
