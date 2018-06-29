@@ -1,7 +1,7 @@
 {
     "manifest_version": 2,
     "name": "KOSHIAN delフォームをポップアップで開く 改",
-    "version": "1.0.0",
+    "version": "1.0.1",
     "description": "delフォームをポップアップで開きます",
     "icons": {
         "48": "icons/icon-48.png"
