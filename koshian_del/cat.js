@@ -1,7 +1,9 @@
 const DEL_CLASS_NAME = "KOSHIAN_del";
 const DEFAULT_POST_ALERT = false;
+const DEFAULT_ALERT_TIME = 1000;
 const DEFAULT_USE_CATALOG_NG = false;
 let post_alert = DEFAULT_POST_ALERT;
+let alert_time = DEFAULT_ALERT_TIME;
 let use_catalog_ng = DEFAULT_USE_CATALOG_NG;
 
 function createCloseButton(text) {
@@ -23,6 +25,7 @@ class Del {
         this.iframe = null;
         this.url = null;
         this.target = null;
+        this.timer = null;
 
         this.create();
         this.hide();
@@ -76,10 +79,19 @@ class Del {
             if (form) {
                 form.onsubmit = () => {
                     form.onsubmit = null;
-                    this.hide();
-
                     if(post_alert){
-                        alert(`delを送信しました`);
+                        this.iframe.onload = () => {
+                            this.iframe.onload = null;
+                            let anchors = this.iframe.contentWindow.document.getElementsByTagName("a");
+                            for (let anchor of anchors) {
+                                // レスポンス内のリンクを削除
+                                anchor.parentNode.removeChild(anchor);
+                            }
+                            if (alert_time > 0) this.timer = setTimeout(this.hide.bind(this), alert_time);
+                        }
+
+                    } else {
+                        this.hide();
                     }
 
                     if (use_catalog_ng){
@@ -116,6 +128,10 @@ class Del {
     }
 
     hide() {
+        if (this.timer) {
+            clearTimeout(this.timer);
+            this.timer = null;
+        }
         this.popup.style.display = "none";
         this.iframe.src = "about:blank";
     }
@@ -201,6 +217,7 @@ function onError(error) {
 
 function onSettingGot(result) {
     post_alert = safeGetValue(result.post_alert, DEFAULT_POST_ALERT);
+    alert_time = safeGetValue(result.alert_time, DEFAULT_ALERT_TIME);
     use_catalog_ng = safeGetValue(result.use_catalog_ng, DEFAULT_USE_CATALOG_NG);
     
     main();
@@ -212,6 +229,7 @@ function onSettingChanged(changes, areaName) {
     }
 
     post_alert = safeGetValue(changes.post_alert.newValue, post_alert);
+    alert_time = safeGetValue(changes.alert_time.newValue, alert_time);
     use_catalog_ng = safeGetValue(changes.use_catalog_ng.newValue, use_catalog_ng);
 }
 

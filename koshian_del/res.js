@@ -1,12 +1,15 @@
 const DEL_CLASS_NAME = "KOSHIAN_del";
 const DEFAULT_POST_ALERT = false;
+const DEFAULT_ALERT_TIME = 1000;
 let post_alert = DEFAULT_POST_ALERT;
+let alert_time = DEFAULT_ALERT_TIME;
 
 class Del {
     constructor() {
         this.resno = "";
         this.popup = null;
         this.iframe = null;
+        this.timer = null;
 
         this.create();
         this.hide();
@@ -48,12 +51,20 @@ class Del {
             if (form) {
                 form.onsubmit = () => {
                     form.onsubmit = null;
-                    target.textContent = "del 送信済み";
-                    target.onclick = (e) => {return false};
-                    this.hide();
-
                     if(post_alert){
-                        alert(`delを送信しました`);
+                        this.iframe.onload = () => {
+                            this.iframe.onload = null;
+                            let anchors = this.iframe.contentWindow.document.getElementsByTagName("a");
+                            for (let anchor of anchors) {
+                                // レスポンス内のリンクを削除
+                                anchor.parentNode.removeChild(anchor);
+                            }
+                            if (alert_time > 0) this.timer = setTimeout(this.hide.bind(this), alert_time);
+                        }
+                        target.textContent = "del 送信済み";
+                        target.onclick = (e) => {return false};
+                    } else {
+                        this.hide();
                     }
 
                     return true;
@@ -78,6 +89,10 @@ class Del {
     }
 
     hide() {
+        if (this.timer) {
+            clearTimeout(this.timer);
+            this.timer = null;
+        }
         this.popup.style.display = "none";
         this.iframe.src = "about:blank";
     }
@@ -164,6 +179,7 @@ function onError(error) {
 
 function onSettingGot(result) {
     post_alert = safeGetValue(result.post_alert, DEFAULT_POST_ALERT);
+    alert_time = safeGetValue(result.alert_time, DEFAULT_ALERT_TIME);
     
     main();
 }
@@ -174,6 +190,7 @@ function onSettingChanged(changes, areaName) {
     }
 
     post_alert = safeGetValue(changes.post_alert.newValue, post_alert);
+    alert_time = safeGetValue(changes.alert_time.newValue, alert_time);
 }
 
 browser.storage.local.get().then(onSettingGot, onError);
