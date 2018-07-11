@@ -9,12 +9,11 @@
 <body>
 
   <p>
-    <input id="page_trans" type="checkbox">
-    <label for="page_trans">delの後ページを移動する</label>
-    <br>
     <input id="post_alert" type="checkbox">
     <label for="post_alert">delの後メッセージを表示する</label>
     <br>
+    <input type="number" id="alert_time" min="0" max>
+    <label for="alert_time">ミリ秒にメッセージを閉じる（0で自動で閉じない）</label>
   </p>
   <p>
     <input id="use_catalog_ng" type="checkbox">
