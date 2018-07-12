@@ -177,39 +177,19 @@ function main() {
         return;
     }
 
-    let table = document.querySelector("table[border]");
-    if (!table) {
-        return;
-    }
-
-    let anchors = table.getElementsByTagName("a");
-    if (!anchors.length) {
-        return;
-    }
-
     del = new Del();
 
-    for (let anchor of anchors) {
-        anchor.addEventListener("contextmenu", getTargetElement, false);
-    }
+    document.addEventListener("contextmenu", getTargetElement, false);
 
     browser.runtime.onMessage.addListener(request => {
         onClickDel(request.linkUrl);
     });
-
-    document.addEventListener("FutabaTH_pickup", (e) => {
-        let pickup_area = document.getElementById("GM_fth_highlighted_threads");
-        if (pickup_area) {
-            let anchors = pickup_area.getElementsByTagName("a");
-            for (let anchor of anchors) {
-                anchor.addEventListener("contextmenu", getTargetElement, false);
-            }
-        }
-    });
 }
 
 function getTargetElement(e) {
-    for (let elm = e.target; elm; elm = elm.parentElement) {
+    let parent = e.target.parentElement;
+    if (parent.tagName != "A") return;
+    for (let elm = parent.parentElement; elm; elm = elm.parentElement) {
         if (elm.tagName == "TD" || elm.className == "GM_fth_pickuped" || elm.className == "GM_fth_opened") {
             del.target = elm;
             return;

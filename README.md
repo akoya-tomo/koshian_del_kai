@@ -18,12 +18,12 @@
   - \(New\) del送信後の応答メッセージを表示  
     del送信後のサーバーからの応答メッセージを表示することができます。  
     また、メッセージの表示時間を設定して、メッセージを自動的に閉じることができます。  
-  - \(New\) ピックアップしたスレからdelフォームを開く（要 [futaba thread highlighter K](https://greasyfork.org/ja/scripts/36639-futaba-thread-highlighter-k/) rev13以上）  
+  - \(New\) ピックアップしたスレからdelフォームを開く（要 [futaba thread highlighter K](https://greasyfork.org/ja/scripts/36639-futaba-thread-highlighter-k/)）  
     futaba thread highlighter Kでピックアップしたスレからdelフォームをポップアップで開くことができます。  
 
 ## インストール
 **GitHub**  
-[![インストールボタン](images/install_button.png "クリックでアドオンをインストール")](https://github.com/akoya-tomo/koshian_del_kai/releases/download/v2.0.0/koshian_del_kai-2.0.0-an+fx.xpi)
+[![インストールボタン](images/install_button.png "クリックでアドオンをインストール")](https://github.com/akoya-tomo/koshian_del_kai/releases/download/v2.0.1/koshian_del_kai-2.0.1-an.fx.xpi)
 
 ※「接続エラーのため、アドオンをダウンロードできませんでした。」と表示されてインストール出来ないときはインストールボタンを右クリックしてxpiファイルをダウンロードし、メニューのツール→アドオン（またはCtrl+Shift+A）で表示されたアドオンマネージャーのページにxpiファイルをドラッグ＆ドロップして下さい。  
 
@@ -33,6 +33,8 @@
   再度設定をお願い致します。  
 
 ## 更新履歴
+* v2.0.1 2018-07-12
+  - カタログからdelフォームを開くときの処理を修正
 * v2.0.0 2018-07-12
   - delフォームを各板の項目内容で表示するように変更
   - del送信後の応答メッセージを表示するように変更

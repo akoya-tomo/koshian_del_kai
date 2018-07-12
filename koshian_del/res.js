@@ -21,7 +21,7 @@ class Del {
             return;
         }
 
-        this.popup = document.createElement("div")
+        this.popup = document.createElement("div");
         this.popup.className = DEL_CLASS_NAME;
         this.popup.style.position = "absolute";
         this.popup.style.border = "solid 1px black";
