@@ -81,7 +81,7 @@ class Del {
                     return true;
                 }
 
-                //iframe内のform以外のnodeを削除
+                // iframe内のform以外のnodeを削除
                 for (let node = this.form.previousSibling; node; node = this.form.previousSibling) {
                     node.parentNode.removeChild(node);
                 }
