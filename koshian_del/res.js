@@ -9,6 +9,7 @@ class Del {
         this.resno = "";
         this.popup = null;
         this.iframe = null;
+        this.form = null;
         this.timer = null;
 
         this.create();
@@ -46,11 +47,11 @@ class Del {
 
         this.iframe.onload = () => {
             this.iframe.onload = null;
-            let iframe_doc = this.iframe.contentWindow.document;
-            let form = iframe_doc.getElementsByTagName("form")[0];
-            if (form) {
-                form.onsubmit = () => {
-                    form.onsubmit = null;
+            this.iframe.doc = this.iframe.contentWindow.document;
+            this.form = this.iframe.doc.getElementsByTagName("form")[0];
+            if (this.form) {
+                this.form.onsubmit = () => {
+                    this.form.onsubmit = null;
                     if(post_alert){
                         this.iframe.onload = () => {
                             this.iframe.onload = null;
@@ -71,14 +72,28 @@ class Del {
                 }
 
                 //iframe内のform以外のnodeを削除
-                for (let node = form.previousSibling; node; node = form.previousSibling) {
+                for (let node = this.form.previousSibling; node; node = this.form.previousSibling) {
                     node.parentNode.removeChild(node);
                 }
-                for (let node = form.nextSibling; node; node = form.nextSibling) {
+                for (let node = this.form.nextSibling; node; node = this.form.nextSibling) {
                     node.parentNode.removeChild(node);
                 }
 
-                this.iframe.height = Math.max(iframe_doc.documentElement.clientHeight, iframe_doc.documentElement.scrollHeight);
+                // form内のtextをlabelに置換
+                let inputs = this.form.getElementsByTagName("input");
+                for (let input of inputs) {
+                    let text = input.nextSibling;
+                    if (text && text.nodeType == Node.TEXT_NODE) {
+                        input.id = input.value;
+                        let label = this.iframe.doc.createElement("label");
+                        label.textContent = text.textContent;
+                        label.htmlFor = input.id;
+                        text.parentNode.insertBefore(label, text.nextSibling);
+                        text.remove();
+                    }
+                }
+
+                this.iframe.height = Math.max(this.iframe.doc.documentElement.clientHeight, this.iframe.doc.documentElement.scrollHeight);
             }
         }
         this.iframe.src = `${location.protocol}//${location.host}/del.php?b=${this.iframe.b}&d=${this.resno}`;
