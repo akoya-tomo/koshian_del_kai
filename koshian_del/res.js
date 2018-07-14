@@ -11,6 +11,7 @@ class Del {
         this.iframe = null;
         this.form = null;
         this.timer = null;
+        this.checked_id = null;
 
         this.create();
         this.hide();
@@ -68,6 +69,15 @@ class Del {
                         this.hide();
                     }
 
+                    // checkしたinputのidを記憶
+                    let inputs = this.iframe.doc.getElementsByTagName("input");
+                    for (let input of inputs) {
+                        if (input.checked) {
+                            this.checked_id = input.id;
+                            break;
+                        }
+                    }
+
                     return true;
                 }
 
@@ -90,6 +100,14 @@ class Del {
                         label.htmlFor = input.id;
                         text.parentNode.insertBefore(label, text.nextSibling);
                         text.remove();
+                    }
+                }
+
+                // 前回checkしたinputにcheckを入れる
+                if (this.checked_id) {
+                    let checked_input = this.iframe.doc.getElementById(this.checked_id);
+                    if (checked_input) {
+                        checked_input.checked = true;
                     }
                 }
 
