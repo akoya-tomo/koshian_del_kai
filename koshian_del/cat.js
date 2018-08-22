@@ -90,7 +90,7 @@ class Del {
                                 anchor.parentNode.removeChild(anchor);
                             }
                             if (alert_time > 0) this.timer = setTimeout(this.hide.bind(this), alert_time);
-                        }
+                        };
 
                     } else {
                         this.hide();
@@ -111,14 +111,13 @@ class Del {
                     }
 
                     return true;
-                }
+                };
 
                 // iframe内のform以外のnodeを削除
-                for (let node = this.form.previousSibling; node; node = this.form.previousSibling) {
-                    node.parentNode.removeChild(node);
-                }
-                for (let node = this.form.nextSibling; node; node = this.form.nextSibling) {
-                    node.parentNode.removeChild(node);
+                let iframe_body = this.iframe.doc.getElementsByTagName("body")[0];
+                if (iframe_body) {
+                    iframe_body.innerHTML = "";
+                    iframe_body.append(this.form);
                 }
 
                 // form内のtextをlabelに置換
@@ -145,7 +144,7 @@ class Del {
 
                 this.iframe.height = Math.max(this.iframe.doc.documentElement.clientHeight, this.iframe.doc.documentElement.scrollHeight);
             }
-        }
+        };
         this.iframe.src = `${location.protocol}//${location.host}/del.php?b=${this.iframe.b}&d=${this.resno}`;
         this.url.textContent = this.iframe.src;
 
