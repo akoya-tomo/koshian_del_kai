@@ -221,11 +221,12 @@ function main() {
 
 function getTargetElement(e) {
     let parent = e.target.parentElement;
-    if (parent.tagName != "A") return;
-    for (let elm = parent.parentElement; elm; elm = elm.parentElement) {
-        if (elm.tagName == "TD" || elm.className == "GM_fth_pickuped" || elm.className == "GM_fth_opened") {
-            del.target = elm;
-            return;
+    if (parent && (parent.tagName == "A" || parent.hasAttribute("koshian_index"))) {
+        for (let elm = parent.parentElement; elm; elm = elm.parentElement) {
+            if (elm.tagName == "TD" || elm.className == "GM_fth_pickuped" || elm.className == "GM_fth_opened") {
+                del.target = elm;
+                return;
+            }
         }
     }
     del.target = null;
