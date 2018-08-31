@@ -1,4 +1,4 @@
-const DEL_CLASS_NAME = "KOSHIAN_del";
+const DEL_POPUP_CLASS_NAME = "KOSHIAN_del_popup";
 const DEFAULT_POST_ALERT = false;
 const DEFAULT_ALERT_TIME = 1000;
 let post_alert = DEFAULT_POST_ALERT;
@@ -24,7 +24,7 @@ class Del {
         }
 
         this.popup = document.createElement("div");
-        this.popup.className = DEL_CLASS_NAME;
+        this.popup.className = DEL_POPUP_CLASS_NAME;
         this.popup.style.position = "absolute";
         this.popup.style.border = "solid 1px black";
         this.popup.style.backgroundColor="#FFFFEE";

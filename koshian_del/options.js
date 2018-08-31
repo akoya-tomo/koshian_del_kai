@@ -2,6 +2,8 @@ const DEFAULT_POST_ALERT = false;
 const DEFAULT_ALERT_TIME = 1000;
 const DEFAULT_USE_CATALOG_NG = false;
 
+/* eslint indent: ["warn", 2] */
+
 function safeGetValue(value, default_value) {
   return value === undefined ? default_value : value;
 }
