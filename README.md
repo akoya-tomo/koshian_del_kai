@@ -23,7 +23,7 @@
 
 ## インストール
 **GitHub**  
-[![インストールボタン](images/install_button.png "クリックでアドオンをインストール")](https://github.com/akoya-tomo/koshian_del_kai/releases/download/v2.0.3/koshian_del_kai-2.0.3-an+fx.xpi)
+[![インストールボタン](images/install_button.png "クリックでアドオンをインストール")](https://github.com/akoya-tomo/koshian_del_kai/releases/download/v2.0.4/koshian_del_kai-2.0.4-an+fx.xpi)
 
 ※「接続エラーのため、アドオンをダウンロードできませんでした。」と表示されてインストール出来ないときはインストールボタンを右クリックしてxpiファイルをダウンロードし、メニューのツール→アドオン（またはCtrl+Shift+A）で表示されたアドオンマネージャーのページにxpiファイルをドラッグ＆ドロップして下さい。  
 
@@ -33,6 +33,8 @@
   再度設定をお願い致します。  
 
 ## 更新履歴
+* v2.0.4 2018-08-31
+  - 「カタログでdelしたスレを非表示」が有効の時にdel送信後の応答メッセージが表示されない不具合を修正
 * v2.0.3 2018-08-22
   - [KOSHIAN カタログの画像をポップアップで表示](https://addons.mozilla.org/ja/firefox/addon/koshian-image-popuper/)（[改](https://github.com/akoya-tomo/koshian_image_popuper_kai/)）のポップアップ上でdelフォームが正常に開けない不具合を修正
 * v2.0.2 2018-07-14
