@@ -6,9 +6,13 @@ TARGET_DIR="./koshian_del"
 OUTPUT_DIR=".."
 
 script_dir=$(cd $(dirname $0); pwd)
+echo "script_dir = $script_dir"
 addon_name=${script_dir##*/}
-addon_ver=$(jq ".version" ${TARGET_DIR}/manifest.json)
-filename="${OUTPUT_DIR}/${addon_name}-${addon_ver:1:-1}.zip"
-
+echo "addon_name = $addon_name"
 cd ${TARGET_DIR}
-zip -q -r -9 ${filename} * -x "*.bak" ".eslint*"
+addon_ver=$(jq -r '.version' manifest.json)
+echo "addon_ver = $addon_ver"
+filename="${OUTPUT_DIR}/${addon_name}-${addon_ver}.zip"
+echo "filename = $filename"
+
+zip -v -r -9 ${filename} * -x "*.bak" ".eslint*"
