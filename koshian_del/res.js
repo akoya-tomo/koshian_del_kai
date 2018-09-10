@@ -64,7 +64,7 @@ class Del {
                             if (alert_time > 0) this.timer = setTimeout(this.hide.bind(this), alert_time);
                         };
                         target.textContent = "del 送信済み";
-                        target.onclick = (e) => {return false;};
+                        target.onclick = () => {return false;};
                     } else {
                         this.hide();
                     }
@@ -197,8 +197,19 @@ function main() {
     // rtd直下のdelだけを選択
     process(0);
 
-    document.addEventListener("KOSHIAN_reload", (e) => {
+    document.addEventListener("KOSHIAN_reload", () => {
         process(last_process_index);
+    });
+
+    let timer = null;
+    document.addEventListener("AkahukuContentAppend", () => {
+        if (timer) {
+            clearTimeout(timer);
+        }
+        timer = setTimeout(() => {
+            timer = null;
+            process(last_process_index);
+        }, 200);
     });
 }
 
@@ -206,7 +217,7 @@ function safeGetValue(value, default_value) {
     return value === undefined ? default_value : value;
 }
 
-function onError(error) {
+function onError(error) {   // eslint-disable-line no-unused-vars
 }
 
 function onSettingGot(result) {
