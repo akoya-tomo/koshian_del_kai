@@ -200,6 +200,17 @@ function main() {
     document.addEventListener("KOSHIAN_reload", (e) => {
         process(last_process_index);
     });
+
+    let timer = null;
+    document.addEventListener("AkahukuContentAppend", () => {
+        if (timer) {
+            clearTimeout(timer);
+        }
+        timer = setTimeout(() => {
+            timer = null;
+            process(last_process_index);
+        }, 200);
+    });
 }
 
 function safeGetValue(value, default_value) {
