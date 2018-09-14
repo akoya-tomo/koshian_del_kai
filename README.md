@@ -23,7 +23,7 @@
 
 ## インストール
 **GitHub**  
-[![インストールボタン](images/install_button.png "クリックでアドオンをインストール")](https://github.com/akoya-tomo/koshian_del_kai/releases/download/v2.0.5/koshian_del_kai-2.0.5-an+fx.xpi)
+[![インストールボタン](images/install_button.png "クリックでアドオンをインストール")](https://github.com/akoya-tomo/koshian_del_kai/releases/download/v2.0.6/koshian_del_kai-2.0.6-an+fx.xpi)
 
 ※「接続エラーのため、アドオンをダウンロードできませんでした。」と表示されてインストール出来ないときはインストールボタンを右クリックしてxpiファイルをダウンロードし、メニューのツール→アドオン（またはCtrl+Shift+A）で表示されたアドオンマネージャーのページにxpiファイルをドラッグ＆ドロップして下さい。  
 
@@ -33,6 +33,10 @@
   再度設定をお願い致します。  
 
 ## 更新履歴
+* v2.0.6 2018-09-14
+  - 赤福Extendedのカタログズームに対応
+  - delフォームがKOSHIAN改や赤福Extendedのポップアップなどに隠れる不具合を修正
+  - 赤福Extendedのリロード検出を修正
 * v2.0.5 2018-09-10
   - [赤福Extended](https://toshiakisp.github.io/akahuku-firefox-sp/)のリロードに対応
 * v2.0.4 2018-08-31
