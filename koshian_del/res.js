@@ -28,6 +28,7 @@ class Del {
         this.popup.style.position = "absolute";
         this.popup.style.border = "solid 1px black";
         this.popup.style.backgroundColor="#FFFFEE";
+        this.popup.style.zIndex = 403;
 
         this.iframe = document.createElement("iframe");
         this.iframe.src = "about:blank";
@@ -201,16 +202,29 @@ function main() {
         process(last_process_index);
     });
 
-    let timer = null;
-    document.addEventListener("AkahukuContentAppend", () => {
-        if (timer) {
-            clearTimeout(timer);
-        }
-        timer = setTimeout(() => {
-            timer = null;
-            process(last_process_index);
-        }, 200);
-    });
+    let status = "";
+    let target = document.getElementById("akahuku_reload_status");
+    if (target) {
+        checkAkahukuReload();
+    } else {
+        document.addEventListener("AkahukuContentApplied", () => {
+            target = document.getElementById("akahuku_reload_status");
+            if (target) checkAkahukuReload();
+        });
+    }
+    function checkAkahukuReload() {
+        let config = { childList: true };
+        let observer = new MutationObserver(function(mutations) {
+            mutations.forEach(function(mutation) {
+                if (target.textContent == status) return;
+                status = target.textContent;
+                if (status.indexOf("新着:") === 0) {
+                    process(last_process_index);
+                }
+            });
+        });
+        observer.observe(target, config);
+    }
 }
 
 function safeGetValue(value, default_value) {

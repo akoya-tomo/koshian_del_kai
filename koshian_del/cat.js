@@ -29,6 +29,8 @@ class Del {
         this.target = null;
         this.timer = null;
         this.checked_id = null;
+        this.client_x = null;
+        this.client_y = null;
 
         this.create();
         this.hide();
@@ -45,6 +47,7 @@ class Del {
         this.popup.style.position = "absolute";
         this.popup.style.border = "solid 1px black";
         this.popup.style.backgroundColor="#FFFFEE";
+        this.popup.style.zIndex = 202;
 
         this.iframe = document.createElement("iframe");
         this.iframe.src = "about:blank";
@@ -191,9 +194,21 @@ let del;
 
 function onClickDel(linkUrl) {
     let resno = Del.getResno(linkUrl);
-    if (resno == "" || !del.target) {
-        return;
+    if (resno == "") return;
+    if (!del.target && del.client_x !== null && del.client_y !== null) {
+        let target = document.elementFromPoint(del.client_x, del.client_y);
+        if (!target) return;
+        let parent = target.parentElement;
+        if (parent && (parent.tagName == "A" || parent.hasAttribute("koshian_index"))) {
+            for (let elm = parent.parentElement; elm; elm = elm.parentElement) {
+                if (elm.tagName == "TD" || elm.className == "GM_fth_pickuped" || elm.className == "GM_fth_opened") {
+                    del.target = elm;
+                    break;
+                }
+            }
+        }
     }
+    if (!del.target) return;
     
     if(del.isHide() || del.resno != resno){
         del.show(resno, del.target);
@@ -220,6 +235,8 @@ function main() {
 }
 
 function getTargetElement(e) {
+    del.client_x = null;
+    del.client_Y = null;
     let parent = e.target.parentElement;
     if (parent && (parent.tagName == "A" || parent.hasAttribute("koshian_index"))) {
         for (let elm = parent.parentElement; elm; elm = elm.parentElement) {
@@ -230,6 +247,8 @@ function getTargetElement(e) {
         }
     }
     del.target = null;
+    del.client_x = e.clientX;
+    del.client_y = e.clientY;
 }
 
 function safeGetValue(value, default_value) {
