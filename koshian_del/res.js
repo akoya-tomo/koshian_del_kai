@@ -28,6 +28,7 @@ class Del {
         this.popup.style.position = "absolute";
         this.popup.style.border = "solid 1px black";
         this.popup.style.backgroundColor="#FFFFEE";
+        this.popup.style.zIndex = 403;
 
         this.iframe = document.createElement("iframe");
         this.iframe.src = "about:blank";
