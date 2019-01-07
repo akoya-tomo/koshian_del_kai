@@ -3,9 +3,12 @@ const DEL_POPUP_CLASS_NAME = "KOSHIAN_del_popup";
 const DEFAULT_POST_ALERT = false;
 const DEFAULT_ALERT_TIME = 1000;
 const DEFAULT_USE_CATALOG_NG = false;
+const DEFAULT_DEL_INTERVAL = 5000;
 let post_alert = DEFAULT_POST_ALERT;
 let alert_time = DEFAULT_ALERT_TIME;
 let use_catalog_ng = DEFAULT_USE_CATALOG_NG;
+let del_interval = DEFAULT_DEL_INTERVAL;
+let last_del = 0;
 
 function createCloseButton(text) {
     let elem = document.createElement("input");
@@ -31,6 +34,8 @@ class Del {
         this.checked_id = null;
         this.client_x = null;
         this.client_y = null;
+        this.submit = null;
+        this.interval_timer = null;
 
         this.create();
         this.hide();
@@ -85,6 +90,12 @@ class Del {
             if (this.form) {
                 this.form.onsubmit = () => {
                     this.form.onsubmit = null;
+                    this.submit = null;
+                    last_del = curTime();
+                    browser.storage.local.set({
+                        last_del:last_del
+                    });
+
                     if(post_alert){
                         this.iframe.onload = () => {
                             this.iframe.onload = null;
@@ -147,6 +158,9 @@ class Del {
                 }
 
                 this.iframe.height = Math.max(this.iframe.doc.documentElement.clientHeight, this.iframe.doc.documentElement.scrollHeight);
+
+                this.submit = this.form.querySelector("input[type='submit']");
+                if (this.submit) switchSubmitButton();
             }
         };
         this.iframe.src = `${location.protocol}//${location.host}/del.php?b=${this.iframe.b}&d=${this.resno}`;
@@ -170,6 +184,7 @@ class Del {
         }
         this.popup.style.display = "none";
         this.iframe.src = "about:blank";
+        this.submit = null;
     }
 
     isHide() {
@@ -219,6 +234,39 @@ function onClickClose() {
     del.hide();
 }
 
+function curTime(){
+    let date = new Date();
+    return date.getTime();
+}
+
+function getRemain(){
+    return last_del + del_interval - curTime();
+}
+
+function countTime(){
+    let remain = getRemain();
+
+    if (remain > 0) {
+        if (del.submit) {
+            del.submit.disabled = true;
+            del.submit.value = `残り ${Math.ceil(remain/1000)}秒`;
+        }
+    } else {
+        if (del.submit) {
+            del.submit.disabled = false;
+            del.submit.value = `削除依頼をする`;
+        }
+        clearInterval(del.interval_timer);
+    }
+}
+
+function switchSubmitButton(){
+    if (del.submit) {
+        countTime();
+    }
+    del.interval_timer = setInterval(countTime, 1000);
+}
+
 function main() {
     let url_matches = location.search.match(/mode=cat/);
     if(!url_matches){
@@ -262,7 +310,9 @@ function onSettingGot(result) {
     post_alert = safeGetValue(result.post_alert, DEFAULT_POST_ALERT);
     alert_time = safeGetValue(result.alert_time, DEFAULT_ALERT_TIME);
     use_catalog_ng = safeGetValue(result.use_catalog_ng, DEFAULT_USE_CATALOG_NG);
-    
+    del_interval = safeGetValue(result.del_interval, DEFAULT_DEL_INTERVAL);
+    last_del = safeGetValue(result.last_del, 0);
+
     main();
 }
 
@@ -274,6 +324,8 @@ function onSettingChanged(changes, areaName) {
     post_alert = safeGetValue(changes.post_alert.newValue, post_alert);
     alert_time = safeGetValue(changes.alert_time.newValue, alert_time);
     use_catalog_ng = safeGetValue(changes.use_catalog_ng.newValue, use_catalog_ng);
+    del_interval = safeGetValue(changes.del_interval.newValue, del_interval);
+    last_del = safeGetValue(changes.last_del.newValue, last_del);
 }
 
 browser.storage.local.get().then(onSettingGot, onError);
