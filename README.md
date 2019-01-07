@@ -20,10 +20,13 @@
     また、メッセージの表示時間を設定して、メッセージを自動的に閉じることができます。  
   - ピックアップしたスレからdelフォームを開く（要 [futaba thread highlighter K](https://greasyfork.org/ja/scripts/36639-futaba-thread-highlighter-k/)）  
     futaba thread highlighter Kでピックアップしたスレからdelフォームをポップアップで開くことができます。  
+  - ![\(New\)](images/new.png "New") del送信後の規制時間  
+    del送信後に次にdel送信が可能になるまでの規制時間を設定することができます。  
+    規制中は「削除依頼をする」ボタンが無効になり、規制解除までの残り時間が表示されます。  
 
 ## インストール
 **GitHub**  
-[![インストールボタン](images/install_button.png "クリックでアドオンをインストール")](https://github.com/akoya-tomo/koshian_del_kai/releases/download/v2.0.6/koshian_del_kai-2.0.6-an+fx.xpi)
+[![インストールボタン](images/install_button.png "クリックでアドオンをインストール")](https://github.com/akoya-tomo/koshian_del_kai/releases/download/v2.1.0/koshian_del_kai-2.1.0-fx.xpi)
 
 ※「接続エラーのため、アドオンをダウンロードできませんでした。」と表示されてインストール出来ないときはインストールボタンを右クリックしてxpiファイルをダウンロードし、メニューのツール→アドオン（またはCtrl+Shift+A）で表示されたアドオンマネージャーのページにxpiファイルをドラッグ＆ドロップして下さい。  
 
@@ -33,6 +36,10 @@
   再度設定をお願い致します。  
 
 ## 更新履歴
+* v2.1.0 2019-01-07
+  - del送信後の規制時間の設定を追加
+  - 「操作が早すぎます」が表示されたときは「del 送信済み」にならないように修正
+  - メッセージ非表示時に「del 送信済み」にならない不具合を修正
 * v2.0.6 2018-09-14
   - 赤福Extendedのカタログズームに対応
   - delフォームがKOSHIAN改や赤福Extendedのポップアップなどに隠れる不具合を修正
