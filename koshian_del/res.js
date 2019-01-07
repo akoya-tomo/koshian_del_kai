@@ -74,10 +74,13 @@ class Del {
                                 // レスポンス内のリンクを削除
                                 anchor.parentNode.removeChild(anchor);
                             }
+                            let body = this.iframe.doc.getElementsByTagName("body")[0];
+                            if (body && !body.textContent.match(/操作が早すぎます/)) {
+                                target.textContent = "del 送信済み";
+                                target.onclick = () => {return false;};
+                            }
                             if (alert_time > 0) this.timer = setTimeout(this.hide.bind(this), alert_time);
                         };
-                        target.textContent = "del 送信済み";
-                        target.onclick = () => {return false;};
                     } else {
                         this.hide();
                     }
