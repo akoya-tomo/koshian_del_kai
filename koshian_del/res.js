@@ -1,8 +1,11 @@
 const DEL_POPUP_CLASS_NAME = "KOSHIAN_del_popup";
 const DEFAULT_POST_ALERT = false;
 const DEFAULT_ALERT_TIME = 1000;
+const DEFAULT_DEL_INTERVAL = 5000;
 let post_alert = DEFAULT_POST_ALERT;
 let alert_time = DEFAULT_ALERT_TIME;
+let del_interval = DEFAULT_DEL_INTERVAL;
+let last_del = 0;
 
 class Del {
     constructor() {
@@ -12,6 +15,8 @@ class Del {
         this.form = null;
         this.timer = null;
         this.checked_id = null;
+        this.submit = null;
+        this.interval_timer = null;
 
         this.create();
         this.hide();
@@ -54,19 +59,31 @@ class Del {
             if (this.form) {
                 this.form.onsubmit = () => {
                     this.form.onsubmit = null;
-                    if(post_alert){
+                    this.submit = null;
+                    last_del = curTime();
+                    browser.storage.local.set({
+                        last_del:last_del
+                    });
+
+                    if (post_alert) {
                         this.iframe.onload = () => {
                             this.iframe.onload = null;
-                            let anchors = this.iframe.contentWindow.document.getElementsByTagName("a");
+                            this.iframe.doc = this.iframe.contentWindow.document;
+                            let anchors = this.iframe.doc.getElementsByTagName("a");
                             for (let anchor of anchors) {
                                 // レスポンス内のリンクを削除
                                 anchor.parentNode.removeChild(anchor);
                             }
+                            let body = this.iframe.doc.getElementsByTagName("body")[0];
+                            if (body && !body.textContent.match(/操作が早すぎます/)) {
+                                target.textContent = "del 送信済み";
+                                target.onclick = () => {return false;};
+                            }
                             if (alert_time > 0) this.timer = setTimeout(this.hide.bind(this), alert_time);
                         };
+                    } else {
                         target.textContent = "del 送信済み";
                         target.onclick = () => {return false;};
-                    } else {
                         this.hide();
                     }
 
@@ -112,6 +129,9 @@ class Del {
                 }
 
                 this.iframe.height = Math.max(this.iframe.doc.documentElement.clientHeight, this.iframe.doc.documentElement.scrollHeight);
+
+                this.submit = this.form.querySelector("input[type='submit']");
+                if (this.submit) switchSubmitButton();
             }
         };
         this.iframe.src = `${location.protocol}//${location.host}/del.php?b=${this.iframe.b}&d=${this.resno}`;
@@ -128,6 +148,7 @@ class Del {
         }
         this.popup.style.display = "none";
         this.iframe.src = "about:blank";
+        this.submit = null;
     }
 
     isHide() {
@@ -165,6 +186,39 @@ function onClickDel(e) {
     }else{
         del.hide();
     }
+}
+
+function curTime(){
+    let date = new Date();
+    return date.getTime();
+}
+
+function getRemain(){
+    return last_del + del_interval - curTime();
+}
+
+function countTime(){
+    let remain = getRemain();
+
+    if (remain > 0) {
+        if (del.submit) {
+            del.submit.disabled = true;
+            del.submit.value = `残り ${Math.ceil(remain/1000)}秒`;
+        }
+    } else {
+        if (del.submit) {
+            del.submit.disabled = false;
+            del.submit.value = `削除依頼をする`;
+        }
+        clearInterval(del.interval_timer);
+    }
+}
+
+function switchSubmitButton(){
+    if (del.submit) {
+        countTime();
+    }
+    del.interval_timer = setInterval(countTime, 1000);
 }
 
 let last_process_index = 0;
@@ -237,7 +291,9 @@ function onError(error) {   // eslint-disable-line no-unused-vars
 function onSettingGot(result) {
     post_alert = safeGetValue(result.post_alert, DEFAULT_POST_ALERT);
     alert_time = safeGetValue(result.alert_time, DEFAULT_ALERT_TIME);
-    
+    del_interval = safeGetValue(result.del_interval, DEFAULT_DEL_INTERVAL);
+    last_del = safeGetValue(result.last_del, 0);
+
     main();
 }
 
@@ -248,6 +304,8 @@ function onSettingChanged(changes, areaName) {
 
     post_alert = safeGetValue(changes.post_alert.newValue, post_alert);
     alert_time = safeGetValue(changes.alert_time.newValue, alert_time);
+    del_interval = safeGetValue(changes.del_interval.newValue, del_interval);
+    last_del = safeGetValue(changes.last_del.newValue, last_del);
 }
 
 browser.storage.local.get().then(onSettingGot, onError);
