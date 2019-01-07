@@ -82,6 +82,8 @@ class Del {
                             if (alert_time > 0) this.timer = setTimeout(this.hide.bind(this), alert_time);
                         };
                     } else {
+                        target.textContent = "del 送信済み";
+                        target.onclick = () => {return false;};
                         this.hide();
                     }
 
