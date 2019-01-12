@@ -210,15 +210,16 @@ function countTime(){
             del.submit.disabled = false;
             del.submit.value = `削除依頼をする`;
         }
-        clearInterval(del.interval_timer);
+        if (del.interval_timer) {
+            clearInterval(del.interval_timer);
+            del.interval_timer = null;
+        }
     }
 }
 
 function switchSubmitButton(){
-    if (del.submit) {
-        countTime();
-    }
     del.interval_timer = setInterval(countTime, 1000);
+    countTime();
 }
 
 let last_process_index = 0;
