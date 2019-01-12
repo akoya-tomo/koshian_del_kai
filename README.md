@@ -15,18 +15,18 @@
     futaba catalog NGと連携してカタログでdelしたスレを非表示にします。NGの種類はfutaba catalog NGで「スレNG」にしたときと同じです。  
   - delフォームを各板の項目内容で表示  
     delフォームの項目内容が固定になっていたのを、各板の項目内容で表示するようにしました。  
-  - del送信後の応答メッセージを表示  
+  - del送信後の応答メッセージを表示（デフォルト：無効）  
     del送信後のサーバーからの応答メッセージを表示することができます。  
-    また、メッセージの表示時間を設定して、メッセージを自動的に閉じることができます。  
+    また、メッセージの表示時間を設定して、メッセージを自動的に閉じることができます。（デフォルト：1000ミリ秒）  
   - ピックアップしたスレからdelフォームを開く（要 [futaba thread highlighter K](https://greasyfork.org/ja/scripts/36639-futaba-thread-highlighter-k/)）  
     futaba thread highlighter Kでピックアップしたスレからdelフォームをポップアップで開くことができます。  
-  - ![\(New\)](images/new.png "New") del送信後の規制時間  
+  - ![\(New\)](images/new.png "New") del送信後の規制時間（デフォルト：5秒）  
     del送信後に次にdel送信が可能になるまでの規制時間を設定することができます。  
     規制中は「削除依頼をする」ボタンが無効になり、規制解除までの残り時間が表示されます。  
 
 ## インストール
 **GitHub**  
-[![インストールボタン](images/install_button.png "クリックでアドオンをインストール")](https://github.com/akoya-tomo/koshian_del_kai/releases/download/v2.1.0/koshian_del_kai-2.1.0-fx.xpi)
+[![インストールボタン](images/install_button.png "クリックでアドオンをインストール")](https://github.com/akoya-tomo/koshian_del_kai/releases/download/v2.1.1/koshian_del_kai-2.1.1-fx.xpi)
 
 ※「接続エラーのため、アドオンをダウンロードできませんでした。」と表示されてインストール出来ないときはインストールボタンを右クリックしてxpiファイルをダウンロードし、メニューのツール→アドオン（またはCtrl+Shift+A）で表示されたアドオンマネージャーのページにxpiファイルをドラッグ＆ドロップして下さい。  
 
@@ -36,6 +36,9 @@
   再度設定をお願い致します。  
 
 ## 更新履歴
+* v2.1.1 2019-01-13
+  - 「delの後メッセージを表示する」が有効のときはメッセージ受信で規制時間の計時を開始するように修正
+  - 内部処理の細かな修正
 * v2.1.0 2019-01-07
   - del送信後の規制時間の設定を追加
   - 「操作が早すぎます」が表示されたときは「del 送信済み」にならないように修正
