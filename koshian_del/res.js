@@ -68,6 +68,10 @@ class Del {
                     if (post_alert) {
                         this.iframe.onload = () => {
                             this.iframe.onload = null;
+                            last_del = curTime();
+                            browser.storage.local.set({
+                                last_del:last_del
+                            });
                             this.iframe.doc = this.iframe.contentWindow.document;
                             let anchors = this.iframe.doc.getElementsByTagName("a");
                             for (let anchor of anchors) {

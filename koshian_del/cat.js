@@ -99,6 +99,10 @@ class Del {
                     if(post_alert){
                         this.iframe.onload = () => {
                             this.iframe.onload = null;
+                            last_del = curTime();
+                            browser.storage.local.set({
+                                last_del:last_del
+                            });
                             let anchors = this.iframe.contentWindow.document.getElementsByTagName("a");
                             for (let anchor of anchors) {
                                 // レスポンス内のリンクを削除
