@@ -99,6 +99,10 @@ class Del {
                     if(post_alert){
                         this.iframe.onload = () => {
                             this.iframe.onload = null;
+                            last_del = curTime();
+                            browser.storage.local.set({
+                                last_del:last_del
+                            });
                             let anchors = this.iframe.contentWindow.document.getElementsByTagName("a");
                             for (let anchor of anchors) {
                                 // レスポンス内のリンクを削除
@@ -256,15 +260,16 @@ function countTime(){
             del.submit.disabled = false;
             del.submit.value = `削除依頼をする`;
         }
-        clearInterval(del.interval_timer);
+        if (del.interval_timer) {
+            clearInterval(del.interval_timer);
+            del.interval_timer = null;
+        }
     }
 }
 
 function switchSubmitButton(){
-    if (del.submit) {
-        countTime();
-    }
     del.interval_timer = setInterval(countTime, 1000);
+    countTime();
 }
 
 function main() {
@@ -321,11 +326,15 @@ function onSettingChanged(changes, areaName) {
         return;
     }
 
-    post_alert = safeGetValue(changes.post_alert.newValue, post_alert);
-    alert_time = safeGetValue(changes.alert_time.newValue, alert_time);
-    use_catalog_ng = safeGetValue(changes.use_catalog_ng.newValue, use_catalog_ng);
-    del_interval = safeGetValue(changes.del_interval.newValue, del_interval);
-    last_del = safeGetValue(changes.last_del.newValue, last_del);
+    if (changes.post_alert) {
+        post_alert = safeGetValue(changes.post_alert.newValue, post_alert);
+        alert_time = safeGetValue(changes.alert_time.newValue, alert_time);
+        use_catalog_ng = safeGetValue(changes.use_catalog_ng.newValue, use_catalog_ng);
+        del_interval = safeGetValue(changes.del_interval.newValue, del_interval);
+    }
+    if (changes.last_del) {
+        last_del = safeGetValue(changes.last_del.newValue, last_del);
+    }
 }
 
 browser.storage.local.get().then(onSettingGot, onError);
