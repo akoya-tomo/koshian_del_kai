@@ -1,8 +1,10 @@
 const DEL_POPUP_CLASS_NAME = "KOSHIAN_del_popup";
 const DEFAULT_POST_ALERT = false;
+const DEFAULT_USE_KOSHIAN_NG = false;
 const DEFAULT_ALERT_TIME = 1000;
 const DEFAULT_DEL_INTERVAL = 5000;
 let post_alert = DEFAULT_POST_ALERT;
+let use_koshian_ng = DEFAULT_USE_KOSHIAN_NG;
 let alert_time = DEFAULT_ALERT_TIME;
 let del_interval = DEFAULT_DEL_INTERVAL;
 let last_del = 0;
@@ -82,6 +84,7 @@ class Del {
                             if (body && !body.textContent.match(/操作が早すぎます/)) {
                                 target.textContent = "del 送信済み";
                                 target.onclick = () => {return false;};
+                                if (use_koshian_ng) hideRes(target.parentElement);
                             }
                             if (alert_time > 0) this.timer = setTimeout(this.hide.bind(this), alert_time);
                         };
@@ -89,6 +92,7 @@ class Del {
                         target.textContent = "del 送信済み";
                         target.onclick = () => {return false;};
                         this.hide();
+                        if (use_koshian_ng) hideRes(target.parentElement);
                     }
 
                     // checkしたinputのidを記憶
@@ -226,6 +230,13 @@ function switchSubmitButton(){
     countTime();
 }
 
+function hideRes(rtd) {
+    if (rtd) {
+        let hideButton = rtd.querySelector(":scope > .KOSHIAN_HideButton") || rtd.querySelector(":scope > .KOSHIAN_NGSwitch");
+        if (hideButton && hideButton.textContent == "[隠す]") hideButton.click();
+    }
+}
+
 let last_process_index = 0;
 
 function process(beg){
@@ -296,6 +307,7 @@ function onError(error) {   // eslint-disable-line no-unused-vars
 function onSettingGot(result) {
     post_alert = safeGetValue(result.post_alert, DEFAULT_POST_ALERT);
     alert_time = safeGetValue(result.alert_time, DEFAULT_ALERT_TIME);
+    use_koshian_ng = safeGetValue(result.use_koshian_ng, DEFAULT_USE_KOSHIAN_NG);
     del_interval = safeGetValue(result.del_interval, DEFAULT_DEL_INTERVAL);
     last_del = safeGetValue(result.last_del, 0);
 
@@ -310,6 +322,7 @@ function onSettingChanged(changes, areaName) {
     if (changes.post_alert) {
         post_alert = safeGetValue(changes.post_alert.newValue, post_alert);
         alert_time = safeGetValue(changes.alert_time.newValue, alert_time);
+        use_koshian_ng = safeGetValue(changes.use_koshian_ng.newValue, use_koshian_ng);
         del_interval = safeGetValue(changes.del_interval.newValue, del_interval);
     }
     if (changes.last_del) {
