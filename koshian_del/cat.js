@@ -3,7 +3,8 @@ const DEL_POPUP_CLASS_NAME = "KOSHIAN_del_popup";
 const DEFAULT_POST_ALERT = false;
 const DEFAULT_ALERT_TIME = 1000;
 const DEFAULT_USE_CATALOG_NG = false;
-const DEFAULT_DEL_INTERVAL = 5000;
+const DEFAULT_DEL_INTERVAL = 5500;
+const DEL_INTERVAL_OFFSET = 20;
 let post_alert = DEFAULT_POST_ALERT;
 let alert_time = DEFAULT_ALERT_TIME;
 let use_catalog_ng = DEFAULT_USE_CATALOG_NG;
@@ -91,6 +92,7 @@ class Del {
                 this.form.onsubmit = () => {
                     this.form.onsubmit = null;
                     this.submit = null;
+                    // 最終del時刻を更新
                     last_del = curTime();
                     browser.storage.local.set({
                         last_del:last_del
@@ -99,10 +101,17 @@ class Del {
                     if(post_alert){
                         this.iframe.onload = () => {
                             this.iframe.onload = null;
+                            // 最終del時刻を更新してタイマーを再設定
                             last_del = curTime();
                             browser.storage.local.set({
                                 last_del:last_del
                             });
+                            if (del.interval_timer) {
+                                clearInterval(del.interval_timer);
+                                del.interval_timer = null;
+                            }
+                            switchSubmitButton();
+
                             let anchors = this.iframe.contentWindow.document.getElementsByTagName("a");
                             for (let anchor of anchors) {
                                 // レスポンス内のリンクを削除
@@ -244,7 +253,7 @@ function curTime(){
 }
 
 function getRemain(){
-    return last_del + del_interval - curTime();
+    return last_del + del_interval - curTime() - DEL_INTERVAL_OFFSET;
 }
 
 function countTime(){
@@ -268,7 +277,7 @@ function countTime(){
 }
 
 function switchSubmitButton(){
-    del.interval_timer = setInterval(countTime, 1000);
+    if (!del.interval_timer) del.interval_timer = setInterval(countTime, 500);
     countTime();
 }
 
