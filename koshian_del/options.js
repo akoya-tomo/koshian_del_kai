@@ -2,7 +2,7 @@ const DEFAULT_POST_ALERT = false;
 const DEFAULT_ALERT_TIME = 1000;
 const DEFAULT_USE_CATALOG_NG = false;
 const DEFAULT_USE_KOSHIAN_NG = false;
-const DEFAULT_DEL_INTERVAL = 5000;
+const DEFAULT_DEL_INTERVAL = 5500;
 
 /* eslint indent: ["warn", 2] */
 
