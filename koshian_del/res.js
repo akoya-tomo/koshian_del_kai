@@ -226,7 +226,7 @@ function countTime(){
 }
 
 function switchSubmitButton(){
-    del.interval_timer = setInterval(countTime, 1000);
+    if (!del.interval_timer) del.interval_timer = setInterval(countTime, 500);
     countTime();
 }
 
