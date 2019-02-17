@@ -4,6 +4,7 @@ const DEFAULT_POST_ALERT = false;
 const DEFAULT_ALERT_TIME = 1000;
 const DEFAULT_USE_CATALOG_NG = false;
 const DEFAULT_DEL_INTERVAL = 5500;
+const DEL_INTERVAL_OFFSET = 20;
 let post_alert = DEFAULT_POST_ALERT;
 let alert_time = DEFAULT_ALERT_TIME;
 let use_catalog_ng = DEFAULT_USE_CATALOG_NG;
@@ -251,7 +252,7 @@ function curTime(){
 }
 
 function getRemain(){
-    return last_del + del_interval - curTime();
+    return last_del + del_interval - curTime() - DEL_INTERVAL_OFFSET;
 }
 
 function countTime(){
