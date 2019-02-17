@@ -20,13 +20,15 @@
     また、メッセージの表示時間を設定して、メッセージを自動的に閉じることができます。（デフォルト：1000ミリ秒）  
   - ピックアップしたスレからdelフォームを開く（要 [futaba thread highlighter K](https://greasyfork.org/ja/scripts/36639-futaba-thread-highlighter-k/)）  
     futaba thread highlighter Kでピックアップしたスレからdelフォームをポップアップで開くことができます。  
-  - ![\(New\)](images/new.png "New") del送信後の規制時間（デフォルト：5秒）  
+  - del送信後の規制時間（デフォルト：5.5秒）  
     del送信後に次にdel送信が可能になるまでの規制時間を設定することができます。  
     規制中は「削除依頼をする」ボタンが無効になり、規制解除までの残り時間が表示されます。  
+  - ![\(New\)](images/new.png "New") レス送信モードでdelしたレスを非表示（要 KOSHIAN NG (改)）（デフォルト：無効）  
+    KOSHIAN NG (改)と連携してレス送信モードでdelしたレスを非表示にします。  
 
 ## インストール
 **GitHub**  
-[![インストールボタン](images/install_button.png "クリックでアドオンをインストール")](https://github.com/akoya-tomo/koshian_del_kai/releases/download/v2.1.1/koshian_del_kai-2.1.1-fx.xpi)
+[![インストールボタン](images/install_button.png "クリックでアドオンをインストール")](https://github.com/akoya-tomo/koshian_del_kai/releases/download/v2.2.0/koshian_del_kai-2.2.0-fx.xpi)
 
 ※「接続エラーのため、アドオンをダウンロードできませんでした。」と表示されてインストール出来ないときはインストールボタンを右クリックしてxpiファイルをダウンロードし、メニューのツール→アドオン（またはCtrl+Shift+A）で表示されたアドオンマネージャーのページにxpiファイルをドラッグ＆ドロップして下さい。  
 
@@ -36,6 +38,11 @@
   再度設定をお願い致します。  
 
 ## 更新履歴
+* v2.2.0 2019-02-17
+  - レス送信モードでdelしたレスを非表示にするオプションを追加
+  - 規制時間の設定を1秒単位から0.5秒単位に変更
+  - 規制時間のデフォルト値を5秒から5.5秒に変更
+  - 内部処理の細かな修正
 * v2.1.1 2019-01-13
   - 「delの後メッセージを表示する」が有効のときはメッセージ受信で規制時間の計時を開始するように修正
   - 内部処理の細かな修正
