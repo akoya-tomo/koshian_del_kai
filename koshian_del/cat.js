@@ -99,10 +99,17 @@ class Del {
                     if(post_alert){
                         this.iframe.onload = () => {
                             this.iframe.onload = null;
+                            // 最終del時刻を更新してタイマーを再設定
                             last_del = curTime();
                             browser.storage.local.set({
                                 last_del:last_del
                             });
+                            if (del.interval_timer) {
+                                clearInterval(del.interval_timer);
+                                del.interval_timer = null;
+                            }
+                            switchSubmitButton();
+
                             let anchors = this.iframe.contentWindow.document.getElementsByTagName("a");
                             for (let anchor of anchors) {
                                 // レスポンス内のリンクを削除
