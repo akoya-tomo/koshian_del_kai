@@ -92,6 +92,7 @@ class Del {
                 this.form.onsubmit = () => {
                     this.form.onsubmit = null;
                     this.submit = null;
+                    // 最終del時刻を更新
                     last_del = curTime();
                     browser.storage.local.set({
                         last_del:last_del
