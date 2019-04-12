@@ -90,9 +90,9 @@ class Del {
                                 anchor.parentNode.removeChild(anchor);
                             }
                             let body = this.iframe.doc.getElementsByTagName("body")[0];
-                            if (body && !body.textContent.match(/操作が早すぎます/)) {
+                            if (body && !body.textContent.match(/操作が早すぎます|理由がありません/)) {
                                 target.textContent = "del 送信済み";
-                                target.onclick = () => {return false;};
+                                if (alert_time > 0) target.onclick = () => {return false;};
                                 if (use_koshian_ng) hideRes(target.parentElement);
                             }
                             if (alert_time > 0) this.timer = setTimeout(this.hide.bind(this), alert_time);
@@ -201,6 +201,7 @@ function onClickDel(e) {
     if(del.isHide() || del.resno != resno){
         del.show(resno, e.target);
     }else{
+        if(e.target.textContent == "del 送信済み") e.target.onclick = () => {return false;};
         del.hide();
     }
 }
