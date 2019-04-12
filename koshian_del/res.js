@@ -90,7 +90,7 @@ class Del {
                                 anchor.parentNode.removeChild(anchor);
                             }
                             let body = this.iframe.doc.getElementsByTagName("body")[0];
-                            if (body && !body.textContent.match(/操作が早すぎます/)) {
+                            if (body && !body.textContent.match(/操作が早すぎます|理由がありません/)) {
                                 target.textContent = "del 送信済み";
                                 if (alert_time > 0) target.onclick = () => {return false;};
                                 if (use_koshian_ng) hideRes(target.parentElement);
