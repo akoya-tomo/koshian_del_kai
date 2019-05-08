@@ -31,6 +31,8 @@ class Del {
             return;
         }
 
+        this.b = url_matches[2];
+
         this.popup = document.createElement("div");
         this.popup.className = DEL_POPUP_CLASS_NAME;
         this.popup.style.position = "absolute";
@@ -42,7 +44,7 @@ class Del {
         this.iframe.src = "about:blank";
         this.iframe.width = "300px";
         this.iframe.height = "426px";
-        this.iframe.b = url_matches[2];
+        this.iframe.b = this.b;
 
         this.popup.appendChild(this.iframe);
 
@@ -50,6 +52,12 @@ class Del {
     }
 
     show(resno, target) {
+        this.iframe = this.popup.getElementsByTagName("iframe")[0];
+        if (!this.iframe.b) {
+            this.iframe.width = "300px";
+            this.iframe.height = "426px";
+            this.iframe.b = this.b;
+        }
         this.resno = resno;
         let scrollX = document.documentElement.scrollLeft;
         let scrollY = document.documentElement.scrollTop;
@@ -282,17 +290,17 @@ function main() {
         process(last_process_index);
     });
 
-    let status = "";
     let target = document.getElementById("akahuku_reload_status");
     if (target) {
-        checkAkahukuReload();
+        checkAkahukuReload(target);
     } else {
         document.addEventListener("AkahukuContentApplied", () => {
             target = document.getElementById("akahuku_reload_status");
-            if (target) checkAkahukuReload();
+            if (target) checkAkahukuReload(target);
         });
     }
-    function checkAkahukuReload() {
+    function checkAkahukuReload(target) {
+        let status = "";
         let config = { childList: true };
         let observer = new MutationObserver(function(mutations) {
             mutations.forEach(function(mutation) {
@@ -300,6 +308,33 @@ function main() {
                 status = target.textContent;
                 if (status.indexOf("新着:") === 0) {
                     process(last_process_index);
+                }
+            });
+        });
+        observer.observe(target, config);
+    }
+
+    let contdisp = document.getElementById("contdisp");
+    if (contdisp) {
+        check2chanReload(contdisp);
+    }
+    function check2chanReload(target) {
+        let status = "";
+        let reloading = false;
+        let config = { childList: true };
+        let observer = new MutationObserver(function(mutations) {
+            mutations.forEach(function(mutation) {
+                if (target.textContent == status) return;
+                status = target.textContent;
+                if (status == "・・・") {
+                    del.hide();
+                    reloading = true;
+                } else
+                if (reloading && status.endsWith("頃消えます")) {
+                    process(last_process_index);
+                    reloading = false;
+                } else {
+                    reloading = false;
                 }
             });
         });
