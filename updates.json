@@ -2,7 +2,7 @@
   "addons": {
     "{063FFDE8-45A4-11E8-93C3-23D2F3E0CD91}": {
       "updates": [
-        { "version": "2.3.0", "update_link": "https://github.com/akoya-tomo/koshian_del_kai/releases/download/v2.3.0/koshian_del_kai-2.3.0-fx.xpi" }
+        { "version": "2.3.1", "update_link": "https://github.com/akoya-tomo/koshian_del_kai/releases/download/v2.3.1/koshian_del_kai-2.3.1-fx.xpi" }
       ]
     }
   }
