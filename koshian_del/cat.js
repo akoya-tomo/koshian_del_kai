@@ -91,6 +91,8 @@ class Del {
             if (this.form) {
                 this.form.onsubmit = () => {
                     this.form.onsubmit = null;
+                    this.submit.disabled = true;
+                    this.submit.value = "送信中...";
                     this.submit = null;
                     // 最終del時刻を更新
                     last_del = curTime();
