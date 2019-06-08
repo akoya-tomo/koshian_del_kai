@@ -1,7 +1,7 @@
 {
     "manifest_version": 2,
     "name": "KOSHIAN delフォームをポップアップで開く 改",
-    "version": "2.3.1",
+    "version": "2.4.0",
     "description": "delフォームをポップアップで開きます",
     "icons": {
         "48": "icons/icon-48.png"
@@ -10,7 +10,7 @@
     "homepage_url": "https://github.com/akoya-tomo/koshian_del_kai/",
     "content_scripts": [
         {
-            "exclude_matches": ["*://*.2chan.net/*/res/*","*://*.2chan.net/*/src/*"],
+            "exclude_matches": ["*://*.2chan.net/*/res/*","*://*.2chan.net/*/src/*", "*://*.2chan.net/bin/*"],
             "matches": ["*://*.2chan.net/*/*"],
             "js": ["cat.js"],
             "all_frames": true
