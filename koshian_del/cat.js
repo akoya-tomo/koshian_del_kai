@@ -76,7 +76,7 @@ class Del {
         document.body.appendChild(this.popup);
     }
 
-    show(resno, target) {
+    show(resno, target, linkUrl) {
         this.resno = resno;
         let scrollX = document.documentElement.scrollLeft;
         let scrollY = document.documentElement.scrollTop;
@@ -140,6 +140,16 @@ class Del {
                         document.dispatchEvent(new CustomEvent("KOSHIAN_del"));
                     }
 
+                    // del id登録
+                    let url = linkUrl.match(/^https?:\/\/([^.]+\.2chan\.net\/[^/]+\/res\/\d+\.htm)$/);
+                    if (url) {
+                        browser.runtime.sendMessage({
+                            id: "koshian_del_add_del_response",
+                            url: url[1],
+                            del_id: resno
+                        });
+                    }
+ 
                     return true;
                 };
 
@@ -241,7 +251,7 @@ function onClickDel(linkUrl) {
     if (!del.target) return;
     
     if(del.isHide() || del.resno != resno){
-        del.show(resno, del.target);
+        del.show(resno, del.target, linkUrl);
     }
 }
 

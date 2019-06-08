@@ -104,6 +104,15 @@ class Del {
                                 target.textContent = "del 送信済み";
                                 if (alert_time > 0) target.onclick = () => {return false;};
                                 if (use_koshian_ng) hideRes(target.parentElement);
+                                // del id登録
+                                let del_id = target.outerHTML.match(/del\((\d+)\)/);
+                                if (del_id) {
+                                    browser.runtime.sendMessage({
+                                        id: "koshian_del_add_del_response",
+                                        url: location.host + location.pathname,
+                                        del_id: del_id[1]
+                                    });
+                                }
                             }
                             if (alert_time > 0) this.timer = setTimeout(this.hide.bind(this), alert_time);
                         };
@@ -112,6 +121,15 @@ class Del {
                         target.onclick = () => {return false;};
                         this.hide();
                         if (use_koshian_ng) hideRes(target.parentElement);
+                        // del id登録
+                        let del_id = target.outerHTML.match(/del\((\d+)\)/);
+                        if (del_id) {
+                            browser.runtime.sendMessage({
+                                id: "koshian_del_add_del_response",
+                                url: location.host + location.pathname,
+                                del_id: del_id[1]
+                            });
+                        }
                     }
 
                     // checkしたinputのidを記憶
@@ -259,19 +277,63 @@ function hideRes(rtd) {
 
 let last_process_index = 0;
 
-function process(beg){
+function process(beg, start = false){
+    let end = 0;
     let dels = document.querySelectorAll(".rtd > .del");
-    if(!dels){
+    if (!dels) {
+        if (start) {
+            restoreDelStatus();
+        }
         return;
     }
 
-    let end = dels.length;
+    end = dels.length;
 
     for(let i = beg; i < end; ++i){
         dels[i].onclick = onClickDel;
     }
 
+    if (start) {
+        restoreDelStatus();
+    }
+
     last_process_index = end;
+
+    function restoreDelStatus() {
+        browser.runtime.sendMessage({
+            id: "koshian_del_request_del_list",
+            url: location.host + location.pathname
+        }).then(response => {
+            let del_list = response.del_list;
+            if (!del_list.length) {
+                return;
+            }
+            // スレ
+            let del = document.getElementsByClassName("del")[0];
+            if (del) {
+                let del_id = del.outerHTML.match(/del\((\d+)\)/);
+                if (del_id && del_list.some(id => id == del_id[1])) {
+                    del.textContent = "del 送信済み";
+                    del.onclick = () => {return false;};
+                }
+            }
+
+            if (end == 0) {
+                return;
+            }
+            // レス
+            for (let i = beg; i < end; ++i) {
+                let del_id = dels[i].outerHTML.match(/del\((\d+)\)/);
+                if (del_id && del_list.some(id => id == del_id[1])) {
+                    dels[i].textContent = "del 送信済み";
+                    dels[i].onclick = () => {return false;};
+                    if (use_koshian_ng) {
+                        hideRes(dels[i].parentElement);
+                    }
+                }
+            }
+        });
+    }
 }
 
 function main() {
@@ -286,7 +348,7 @@ function main() {
     document.getElementsByClassName("del")[0].onclick = onClickDel;
 
     // rtd直下のdelだけを選択
-    process(0);
+    process(0, true);
 
     document.addEventListener("KOSHIAN_reload", () => {
         process(last_process_index);
