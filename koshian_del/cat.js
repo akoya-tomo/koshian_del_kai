@@ -119,7 +119,9 @@ class Del {
                                 // レスポンス内のリンクを削除
                                 anchor.parentNode.removeChild(anchor);
                             }
-                            if (alert_time > 0) this.timer = setTimeout(this.hide.bind(this), alert_time);
+                            if (alert_time > 0) {
+                                this.timer = setTimeout(this.hide.bind(this), alert_time);
+                            }
                         };
 
                     } else {
@@ -185,7 +187,9 @@ class Del {
                 this.iframe.height = Math.max(this.iframe.doc.documentElement.clientHeight, this.iframe.doc.documentElement.scrollHeight);
 
                 this.submit = this.form.querySelector("input[type='submit']");
-                if (this.submit) switchSubmitButton();
+                if (this.submit) {
+                    switchSubmitButton();
+                }
             }
         };
         this.iframe.src = `${location.protocol}//${location.host}/del.php?b=${this.iframe.b}&d=${this.resno}`;
@@ -234,10 +238,14 @@ let del;
 
 function onClickDel(linkUrl) {
     let resno = Del.getResno(linkUrl);
-    if (resno == "") return;
+    if (resno == "") {
+        return;
+    }
     if (!del.target && del.client_x !== null && del.client_y !== null) {
         let target = document.elementFromPoint(del.client_x, del.client_y);
-        if (!target) return;
+        if (!target) {
+            return;
+        }
         let parent = target.parentElement;
         if (parent && (parent.tagName == "A" || parent.hasAttribute("koshian_index"))) {
             for (let elm = parent.parentElement; elm; elm = elm.parentElement) {
@@ -248,7 +256,9 @@ function onClickDel(linkUrl) {
             }
         }
     }
-    if (!del.target) return;
+    if (!del.target) {
+        return;
+    }
     
     if(del.isHide() || del.resno != resno){
         del.show(resno, del.target, linkUrl);
@@ -289,7 +299,9 @@ function countTime(){
 }
 
 function switchSubmitButton(){
-    if (!del.interval_timer) del.interval_timer = setInterval(countTime, 500);
+    if (!del.interval_timer) {
+        del.interval_timer = setInterval(countTime, 500);
+    }
     countTime();
 }
 
@@ -329,7 +341,7 @@ function safeGetValue(value, default_value) {
     return value === undefined ? default_value : value;
 }
 
-function onError(error) {
+function onError(error) {   // eslint-disable-line no-unused-vars
 }
 
 function onSettingGot(result) {

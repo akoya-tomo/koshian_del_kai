@@ -102,8 +102,12 @@ class Del {
                             let body = this.iframe.doc.getElementsByTagName("body")[0];
                             if (body && !body.textContent.match(/操作が早すぎます|理由がありません/)) {
                                 target.textContent = "del 送信済み";
-                                if (alert_time > 0) target.onclick = () => {return false;};
-                                if (use_koshian_ng) hideRes(target.parentElement);
+                                if (alert_time > 0) {
+                                    target.onclick = () => {return false;};
+                                }
+                                if (use_koshian_ng) {
+                                    hideRes(target.parentElement);
+                                }
                                 // del id登録
                                 let del_id = target.outerHTML.match(/del\((\d+)\)/);
                                 if (del_id) {
@@ -114,13 +118,17 @@ class Del {
                                     });
                                 }
                             }
-                            if (alert_time > 0) this.timer = setTimeout(this.hide.bind(this), alert_time);
+                            if (alert_time > 0) {
+                                this.timer = setTimeout(this.hide.bind(this), alert_time);
+                            }
                         };
                     } else {
                         target.textContent = "del 送信済み";
                         target.onclick = () => {return false;};
                         this.hide();
-                        if (use_koshian_ng) hideRes(target.parentElement);
+                        if (use_koshian_ng) {
+                            hideRes(target.parentElement);
+                        }
                         // del id登録
                         let del_id = target.outerHTML.match(/del\((\d+)\)/);
                         if (del_id) {
@@ -176,7 +184,9 @@ class Del {
                 this.iframe.height = Math.max(this.iframe.doc.documentElement.clientHeight, this.iframe.doc.documentElement.scrollHeight);
 
                 this.submit = this.form.querySelector("input[type='submit']");
-                if (this.submit) switchSubmitButton();
+                if (this.submit) {
+                    switchSubmitButton();
+                }
             }
         };
         this.iframe.src = `${location.protocol}//${location.host}/del.php?b=${this.iframe.b}&d=${this.resno}`;
@@ -229,7 +239,9 @@ function onClickDel(e) {
     if(del.isHide() || del.resno != resno){
         del.show(resno, e.target);
     }else{
-        if(e.target.textContent == "del 送信済み") e.target.onclick = () => {return false;};
+        if(e.target.textContent == "del 送信済み") {
+            e.target.onclick = () => {return false;};
+        }
         del.hide();
     }
 }
@@ -264,14 +276,18 @@ function countTime(){
 }
 
 function switchSubmitButton(){
-    if (!del.interval_timer) del.interval_timer = setInterval(countTime, 500);
+    if (!del.interval_timer) {
+        del.interval_timer = setInterval(countTime, 500);
+    }
     countTime();
 }
 
 function hideRes(rtd) {
     if (rtd) {
         let hideButton = rtd.querySelector(":scope > .KOSHIAN_HideButton") || rtd.querySelector(":scope > .KOSHIAN_NGSwitch");
-        if (hideButton && hideButton.textContent == "[隠す]") hideButton.click();
+        if (hideButton && hideButton.textContent == "[隠す]") {
+            hideButton.click();
+        }
     }
 }
 
@@ -350,25 +366,31 @@ function main() {
     // rtd直下のdelだけを選択
     process(0, true);
 
+    // KOSHIANリロード監視
     document.addEventListener("KOSHIAN_reload", () => {
         process(last_process_index);
     });
 
+    // 赤福リロード監視
     let target = document.getElementById("akahuku_reload_status");
     if (target) {
         checkAkahukuReload(target);
     } else {
         document.addEventListener("AkahukuContentApplied", () => {
             target = document.getElementById("akahuku_reload_status");
-            if (target) checkAkahukuReload(target);
+            if (target) {
+                checkAkahukuReload(target);
+            }
         });
     }
     function checkAkahukuReload(target) {
         let status = "";
         let config = { childList: true };
         let observer = new MutationObserver(function(mutations) {
-            mutations.forEach(function(mutation) {
-                if (target.textContent == status) return;
+            mutations.forEach(function(mutation) {  // eslint-disable-line no-unused-vars
+                if (target.textContent == status) {
+                    return;
+                }
                 status = target.textContent;
                 if (status.indexOf("新着:") === 0) {
                     process(last_process_index);
@@ -378,6 +400,7 @@ function main() {
         observer.observe(target, config);
     }
 
+    // ふたばリロード監視
     let contdisp = document.getElementById("contdisp");
     if (contdisp) {
         check2chanReload(contdisp);
@@ -387,8 +410,10 @@ function main() {
         let reloading = false;
         let config = { childList: true };
         let observer = new MutationObserver(function(mutations) {
-            mutations.forEach(function(mutation) {
-                if (target.textContent == status) return;
+            mutations.forEach(function(mutation) {  // eslint-disable-line no-unused-vars
+                if (target.textContent == status) {
+                    return;
+                }
                 status = target.textContent;
                 if (status == "・・・") {
                     del.hide();
