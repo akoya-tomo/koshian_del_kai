@@ -37,6 +37,7 @@ class Del {
         this.client_y = null;
         this.submit = null;
         this.interval_timer = null;
+        this.srcdoc = null;
 
         this.create();
         this.hide();
@@ -155,11 +156,14 @@ class Del {
                     return true;
                 };
 
-                // iframe内のform以外のnodeを削除
-                let iframe_body = this.iframe.doc.getElementsByTagName("body")[0];
-                if (iframe_body) {
-                    iframe_body.innerHTML = "";
-                    iframe_body.append(this.form);
+                if (!this.srcdoc) {
+                    // iframe内のform以外のnodeを削除
+                    let iframe_body = this.iframe.doc.getElementsByTagName("body")[0];
+                    if (iframe_body) {
+                        iframe_body.innerHTML = "";
+                        iframe_body.append(this.form);
+                    }
+                    this.srcdoc = this.form.outerHTML;
                 }
 
                 // form内のtextをlabelに置換
@@ -192,6 +196,10 @@ class Del {
                 }
             }
         };
+        if (this.srcdoc) {
+            let srcdoc = this.srcdoc.replace(/<form action="del.php/, `<form action="${location.protocol}//${location.host}/del.php`).replace(/name="d" value="\d+"/, `name="d" value="${this.resno}"`);
+            this.iframe.srcdoc = srcdoc;
+        }
         this.iframe.src = `${location.protocol}//${location.host}/del.php?b=${this.iframe.b}&d=${this.resno}`;
         this.url.textContent = this.iframe.src;
 
@@ -305,6 +313,20 @@ function switchSubmitButton(){
     countTime();
 }
 
+function getCatalogResno() {
+    let cattable = document.getElementById("cattable");
+    if (cattable) {
+        let anchor = cattable.querySelector("td > a");
+        if (anchor && anchor.href) {
+            let match = anchor.href.match(/res\/(\d+)\.htm/);
+            if (match) {
+                return match[1];
+            }
+        }
+    }
+    return null;
+}
+
 function main() {
     let url_matches = location.search.match(/mode=cat/);
     if(!url_matches){
@@ -312,6 +334,25 @@ function main() {
     }
 
     del = new Del();
+
+    let d = getCatalogResno();
+    if (d) {
+    // delフォームを取得
+        let xml = new XMLHttpRequest();
+        xml.open("GET", `${location.protocol}//${location.host}/del.php?b=${del.iframe.b}&d=${d}`);
+        xml.responseType = "document";
+        xml.onload = () => {
+            if (xml.status != 200) {
+                return;
+            }
+
+            let form = xml.responseXML.getElementsByTagName("form")[0];
+            if (form) {
+                del.srcdoc = form.outerHTML;
+            }
+        };
+        xml.send();
+    }
 
     document.addEventListener("contextmenu", getTargetElement, false);
 

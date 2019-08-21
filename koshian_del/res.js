@@ -13,6 +13,8 @@ let last_del = 0;
 class Del {
     constructor() {
         this.resno = "";
+        this.b = null;
+        this.d = null;
         this.popup = null;
         this.iframe = null;
         this.form = null;
@@ -20,18 +22,20 @@ class Del {
         this.checked_id = null;
         this.submit = null;
         this.interval_timer = null;
+        this.srcdoc = null;
 
         this.create();
         this.hide();
     }
 
     create(){
-        let url_matches = location.href.match(/https?:\/\/(.+?)\/(.+?)\/res\/[0-9]+\.htm/);
+        let url_matches = location.href.match(/https?:\/\/(.+?)\/(.+?)\/res\/([0-9]+)\.htm/);
         if(!url_matches){
             return;
         }
 
         this.b = url_matches[2];
+        this.d = url_matches[3];
 
         this.popup = document.createElement("div");
         this.popup.className = DEL_POPUP_CLASS_NAME;
@@ -152,11 +156,14 @@ class Del {
                     return true;
                 };
 
-                // iframe内のform以外のnodeを削除
-                let iframe_body = this.iframe.doc.getElementsByTagName("body")[0];
-                if (iframe_body) {
-                    iframe_body.innerHTML = "";
-                    iframe_body.append(this.form);
+                if (!this.srcdoc) {
+                    // iframe内のform以外のnodeを削除
+                    let iframe_body = this.iframe.doc.getElementsByTagName("body")[0];
+                    if (iframe_body) {
+                        iframe_body.innerHTML = "";
+                        iframe_body.append(this.form);
+                    }
+                    this.srcdoc = this.form.outerHTML;
                 }
 
                 // form内のtextをlabelに置換
@@ -189,6 +196,10 @@ class Del {
                 }
             }
         };
+        if (this.srcdoc) {
+            let srcdoc = this.srcdoc.replace(/<form action="del.php/, `<form action="${location.protocol}//${location.host}/del.php`).replace(/name="d" value="\d+"/, `name="d" value="${this.resno}"`);
+            this.iframe.srcdoc = srcdoc;
+        }
         this.iframe.src = `${location.protocol}//${location.host}/del.php?b=${this.iframe.b}&d=${this.resno}`;
 
         this.popup.style.left = `${scrollX + rect.left + rect.width}px`;
@@ -202,6 +213,7 @@ class Del {
             this.timer = null;
         }
         this.popup.style.display = "none";
+        this.iframe.removeAttribute("srcdoc");
         this.iframe.src = "about:blank";
         this.submit = null;
     }
@@ -359,6 +371,22 @@ function main() {
     }
 
     del = new Del();
+
+    // delフォームを取得
+    let xml = new XMLHttpRequest();
+    xml.open("GET", `${location.protocol}//${location.host}/del.php?b=${del.b}&d=${del.d}`);
+    xml.responseType = "document";
+    xml.onload = () => {
+        if (xml.status != 200) {
+            return;
+        }
+
+        let form = xml.responseXML.getElementsByTagName("form")[0];
+        if (form) {
+            del.srcdoc = form.outerHTML;
+        }
+    };
+    xml.send();
 
     // thre
     document.getElementsByClassName("del")[0].onclick = onClickDel;
