@@ -31,7 +31,7 @@
 
 ## インストール
 **GitHub**  
-[![インストールボタン](images/install_button.png "クリックでアドオンをインストール")](https://github.com/akoya-tomo/koshian_del_kai/releases/download/v2.5.0/koshian_del_kai-2.5.0-fx.xpi)
+[![インストールボタン](images/install_button.png "クリックでアドオンをインストール")](https://github.com/akoya-tomo/koshian_del_kai/releases/download/v2.4.0/koshian_del_kai-2.4.0-fx.xpi)
 
 ※「接続エラーのため、アドオンをダウンロードできませんでした。」と表示されてインストール出来ないときはインストールボタンを右クリックしてxpiファイルをダウンロードし、メニューのツール→アドオン（またはCtrl+Shift+A）で表示されたアドオンマネージャーのページにxpiファイルをドラッグ＆ドロップして下さい。  
 
@@ -51,9 +51,6 @@
   3. 残ったdelフォームから「削除依頼をする」ボタンでdel送信する  
 
 ## 更新履歴
-* v2.5.0 2019-08-22
-  - delフォームを開く速度を改善
-  - リロード監視を修正
 * v2.4.0 2019-06-08
   - スレを閉じたりリロードしても「del送信済み」を記憶するように修正
 * v2.3.1 2019-05-13
