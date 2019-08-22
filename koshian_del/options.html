@@ -26,6 +26,12 @@
     <input id="del_interval" type="number" min="0" step="0.5">
     <label for="del_interval">規制時間(秒)</label>
   </p>
+  <p>
+    <input id="use_srcdoc" type="checkbox">
+    <label for="use_srcdoc">delフォームを先読みする（Firefox 69以降で動作）</label>
+    <br>
+    ・del送信後に「refererが空です.」のエラーメッセージが出る時は無効にしてください。
+  </p>
 
   <input id="submit_button" type="button" value="Save">
 
