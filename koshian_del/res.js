@@ -3,11 +3,13 @@ const DEFAULT_POST_ALERT = false;
 const DEFAULT_USE_KOSHIAN_NG = false;
 const DEFAULT_ALERT_TIME = 1000;
 const DEFAULT_DEL_INTERVAL = 5500;
+const DEFAULT_USE_SRCDOC = false;
 const DEL_INTERVAL_OFFSET = 20;
 let post_alert = DEFAULT_POST_ALERT;
 let use_koshian_ng = DEFAULT_USE_KOSHIAN_NG;
 let alert_time = DEFAULT_ALERT_TIME;
 let del_interval = DEFAULT_DEL_INTERVAL;
+let use_srcdoc = DEFAULT_USE_SRCDOC;
 let last_del = 0;
 
 class Del {
@@ -156,27 +158,33 @@ class Del {
                     return true;
                 };
 
-                if (!this.srcdoc) {
+                if (!this.srcdoc || !this.srcdoc.trimmed) {
                     // iframe内のform以外のnodeを削除
-                    let iframe_body = this.iframe.doc.getElementsByTagName("body")[0];
+                    let iframe_body = this.iframe.doc.body;
                     if (iframe_body) {
                         iframe_body.innerHTML = "";
                         iframe_body.append(this.form);
                     }
-                    this.srcdoc = this.form.outerHTML;
-                }
 
-                // form内のtextをlabelに置換
-                let inputs = this.form.getElementsByTagName("input");
-                for (let input of inputs) {
-                    let text = input.nextSibling;
-                    if (text && text.nodeType == Node.TEXT_NODE) {
-                        input.id = input.value;
-                        let label = this.iframe.doc.createElement("label");
-                        label.textContent = text.textContent;
-                        label.htmlFor = input.id;
-                        text.parentNode.insertBefore(label, text.nextSibling);
-                        text.remove();
+                    // form内のtextをlabelに置換
+                    let inputs = this.form.getElementsByTagName("input");
+                    for (let input of inputs) {
+                        let text = input.nextSibling;
+                        if (text && text.nodeType == Node.TEXT_NODE) {
+                            input.id = input.value;
+                            let label = this.iframe.doc.createElement("label");
+                            label.textContent = text.textContent;
+                            label.htmlFor = input.id;
+                            text.parentNode.insertBefore(label, text.nextSibling);
+                            text.remove();
+                        }
+                    }
+                }
+                if (!this.srcdoc) {
+                    let iframe_html = this.iframe.doc.documentElement;
+                    if (iframe_html) {
+                        this.srcdoc = iframe_html.outerHTML;
+                        this.srcdoc.trimmed = true;
                     }
                 }
 
@@ -196,7 +204,7 @@ class Del {
                 }
             }
         };
-        if (this.srcdoc) {
+        if (use_srcdoc && this.srcdoc) {
             let srcdoc = this.srcdoc.replace(/<form action="del.php/, `<form action="${location.protocol}//${location.host}/del.php`).replace(/name="d" value="\d+"/, `name="d" value="${this.resno}"`);
             this.iframe.srcdoc = srcdoc;
         }
@@ -213,6 +221,9 @@ class Del {
             this.timer = null;
         }
         this.popup.style.display = "none";
+        if (this.iframe.srcdoc) {
+            this.iframe.srcdoc = "";
+        }
         this.iframe.removeAttribute("srcdoc");
         this.iframe.src = "about:blank";
         this.submit = null;
@@ -381,9 +392,9 @@ function main() {
             return;
         }
 
-        let form = xml.responseXML.getElementsByTagName("form")[0];
-        if (form) {
-            del.srcdoc = form.outerHTML;
+        let html = xml.responseXML.getElementsByTagName("html")[0];
+        if (html) {
+            del.srcdoc = html.outerHTML;
         }
     };
     xml.send();
@@ -466,6 +477,7 @@ function onSettingGot(result) {
     alert_time = safeGetValue(result.alert_time, DEFAULT_ALERT_TIME);
     use_koshian_ng = safeGetValue(result.use_koshian_ng, DEFAULT_USE_KOSHIAN_NG);
     del_interval = safeGetValue(result.del_interval, DEFAULT_DEL_INTERVAL);
+    use_srcdoc = safeGetValue(result.use_srcdoc, DEFAULT_USE_SRCDOC);
     last_del = safeGetValue(result.last_del, 0);
 
     main();
@@ -481,6 +493,7 @@ function onSettingChanged(changes, areaName) {
         alert_time = safeGetValue(changes.alert_time.newValue, alert_time);
         use_koshian_ng = safeGetValue(changes.use_koshian_ng.newValue, use_koshian_ng);
         del_interval = safeGetValue(changes.del_interval.newValue, del_interval);
+        use_srcdoc = safeGetValue(changes.use_srcdoc.newValue, use_srcdoc);
     }
     if (changes.last_del) {
         last_del = safeGetValue(changes.last_del.newValue, last_del);
