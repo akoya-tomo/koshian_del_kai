@@ -35,7 +35,7 @@
 
 ## インストール
 **GitHub**  
-[![インストールボタン](images/install_button.png "クリックでアドオンをインストール")](https://github.com/akoya-tomo/koshian_del_kai/releases/download/v2.5.1/koshian_del_kai-2.5.1-fx.xpi)
+[![インストールボタン](images/install_button.png "クリックでアドオンをインストール")](https://github.com/akoya-tomo/koshian_del_kai/releases/download/v2.5.2/koshian_del_kai-2.5.2-fx.xpi)
 
 ※「接続エラーのため、アドオンをダウンロードできませんでした。」と表示されてインストール出来ないときはインストールボタンを右クリックしてxpiファイルをダウンロードし、メニューのツール→アドオン（またはCtrl+Shift+A）で表示されたアドオンマネージャーのページにxpiファイルをドラッグ＆ドロップして下さい。  
 
@@ -55,6 +55,8 @@
   3. 残ったdelフォームから「削除依頼をする」ボタンでdel送信する  
 
 ## 更新履歴
+* v2.5.2 2019-09-11
+  - delフォームの先読みに失敗したとき、delフォームが初回のみ正常に動作しない不具合を修正
 * v2.5.1 2019-08-22
   - 「delフォームを先読みする」オプションを実験的機能として追加
 * v2.5.0 2019-08-22
