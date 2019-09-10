@@ -25,6 +25,7 @@ class Del {
         this.submit = null;
         this.interval_timer = null;
         this.srcdoc = null;
+        this.has_trimmed_srcdoc = false;
 
         this.create();
         this.hide();
@@ -158,7 +159,7 @@ class Del {
                     return true;
                 };
 
-                if (!this.srcdoc || !this.srcdoc.trimmed) {
+                if (!this.srcdoc || !this.has_trimmed_srcdoc) {
                     // iframe内のform以外のnodeを削除
                     let iframe_body = this.iframe.doc.body;
                     if (iframe_body) {
@@ -184,7 +185,7 @@ class Del {
                     let iframe_html = this.iframe.doc.documentElement;
                     if (iframe_html) {
                         this.srcdoc = iframe_html.outerHTML;
-                        this.srcdoc.trimmed = true;
+                        this.has_trimmed_srcdoc = true;
                     }
                 }
 
