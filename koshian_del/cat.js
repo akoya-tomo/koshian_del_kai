@@ -40,6 +40,7 @@ class Del {
         this.submit = null;
         this.interval_timer = null;
         this.srcdoc = null;
+        this.has_trimmed_srcdoc = false;
 
         this.create();
         this.hide();
@@ -50,6 +51,8 @@ class Del {
         if(!url_matches){
             return;
         }
+
+        this.b = url_matches[2];
 
         this.popup = document.createElement("div");
         this.popup.className = DEL_POPUP_CLASS_NAME;
@@ -63,7 +66,7 @@ class Del {
         this.iframe.width = "300px";
         this.iframe.height = "426px";
         this.iframe.style.clear = "both";
-        this.iframe.b = url_matches[2];
+        this.iframe.b = this.b;
 
         this.url = document.createElement("div");
         this.url.style.width = "230px";
@@ -158,7 +161,7 @@ class Del {
                     return true;
                 };
 
-                if (!this.srcdoc || !this.srcdoc.trimmed) {
+                if (!this.srcdoc || !this.has_trimmed_srcdoc) {
                     // iframe内のform以外のnodeを削除
                     let iframe_body = this.iframe.doc.body;
                     if (iframe_body) {
@@ -184,7 +187,7 @@ class Del {
                     let iframe_html = this.iframe.doc.documentElement;
                     if (iframe_html) {
                         this.srcdoc = iframe_html.outerHTML;
-                        this.srcdoc.trimmed = true;
+                        this.has_trimmed_srcdoc = true;
                     }
                 }
 
@@ -205,8 +208,7 @@ class Del {
             }
         };
         if (use_srcdoc && this.srcdoc) {
-            let srcdoc = this.srcdoc.replace(/<form action="del.php/, `<form action="${location.protocol}//${location.host}/del.php`).replace(/name="d" value="\d+"/, `name="d" value="${this.resno}"`);
-            this.iframe.srcdoc = srcdoc;
+            this.iframe.srcdoc = this.srcdoc.replace(/<form action="del.php/, `<form action="${location.protocol}//${location.host}/del.php`).replace(/name="d" value="\d+"/, `name="d" value="${this.resno}"`);
         }
         this.iframe.src = `${location.protocol}//${location.host}/del.php?b=${this.iframe.b}&d=${this.resno}`;
         this.url.textContent = this.iframe.src;
@@ -347,11 +349,11 @@ function main() {
 
     del = new Del();
 
-    let d = getCatalogResno();
-    if (d) {
+    let cat_resno = getCatalogResno();
+    if (cat_resno) {
     // delフォームを取得
         let xml = new XMLHttpRequest();
-        xml.open("GET", `${location.protocol}//${location.host}/del.php?b=${del.iframe.b}&d=${d}`);
+        xml.open("GET", `${location.protocol}//${location.host}/del.php?b=${del.b}&d=${cat_resno}`);
         xml.responseType = "document";
         xml.onload = () => {
             if (xml.status != 200) {
