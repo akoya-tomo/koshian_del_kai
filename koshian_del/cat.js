@@ -271,7 +271,7 @@ function onClickDel(linkUrl) {
         let parent = target.parentElement;
         if (parent && (parent.tagName == "A" || parent.hasAttribute("koshian_index"))) {
             for (let elm = parent.parentElement; elm; elm = elm.parentElement) {
-                if (elm.tagName == "TD" || elm.className == "GM_fth_pickuped" || elm.className == "GM_fth_opened") {
+                if (elm.tagName == "TD" || elm.className == "GM_fth_pickuped" || elm.className == "GM_fth_opened" || elm.classList.contains("cs")) {
                     del.target = elm;
                     break;
                 }
@@ -330,7 +330,7 @@ function switchSubmitButton(){
 function getCatalogResno() {
     let cattable = document.getElementById("cattable");
     if (cattable) {
-        let anchor = cattable.querySelector("td > a");
+        let anchor = cattable.querySelector("td > a") || cattable.querySelector(".cu > a");
         if (anchor && anchor.href) {
             let match = anchor.href.match(/res\/(\d+)\.htm/);
             if (match) {
