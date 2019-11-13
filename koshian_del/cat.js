@@ -269,7 +269,7 @@ function onClickDel(linkUrl) {
             return;
         }
         let parent = target.parentElement;
-        if (parent && (parent.tagName == "A" || parent.hasAttribute("koshian_index"))) {
+        if (parent && (parent.tagName == "A" || parent.hasAttribute("koshian_index") || target.nodeName == "A")) {
             for (let elm = parent.parentElement; elm; elm = elm.parentElement) {
                 if (elm.tagName == "TD" || elm.className == "GM_fth_pickuped" || elm.className == "GM_fth_opened" || elm.classList.contains("cs")) {
                     del.target = elm;
@@ -379,9 +379,9 @@ function getTargetElement(e) {
     del.client_x = null;
     del.client_Y = null;
     let parent = e.target.parentElement;
-    if (parent && (parent.tagName == "A" || parent.hasAttribute("koshian_index"))) {
+    if (parent && (parent.tagName == "A" || parent.hasAttribute("koshian_index") || e.target.nodeName == "A")) {
         for (let elm = parent.parentElement; elm; elm = elm.parentElement) {
-            if (elm.tagName == "TD" || elm.className == "GM_fth_pickuped" || elm.className == "GM_fth_opened") {
+            if (elm.tagName == "TD" || elm.className == "GM_fth_pickuped" || elm.className == "GM_fth_opened" || elm.classList.contains("cs")) {
                 del.target = elm;
                 return;
             }
