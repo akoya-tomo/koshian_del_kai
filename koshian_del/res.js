@@ -4,12 +4,14 @@ const DEFAULT_USE_KOSHIAN_NG = false;
 const DEFAULT_ALERT_TIME = 1000;
 const DEFAULT_DEL_INTERVAL = 5500;
 const DEFAULT_USE_SRCDOC = false;
+const DEFAULT_USE_DEL_BUTTON = true;
 const DEL_INTERVAL_OFFSET = 20;
 let post_alert = DEFAULT_POST_ALERT;
 let use_koshian_ng = DEFAULT_USE_KOSHIAN_NG;
 let alert_time = DEFAULT_ALERT_TIME;
 let del_interval = DEFAULT_DEL_INTERVAL;
 let use_srcdoc = DEFAULT_USE_SRCDOC;
+let use_del_button = DEFAULT_USE_DEL_BUTTON;
 let last_del = 0;
 
 class Del {
@@ -234,12 +236,27 @@ class Del {
     }
 
     static getResno(target) {
-        for (let elem = target.parentElement.firstElementChild; elem; elem = elem.nextElementSibling) {
-            if (elem.tagName == "INPUT" && elem.value == "delete") {
-                let matches = elem.getAttribute("name").match(/([0-9]+)/);
-                if (matches != null) {
+        for (let node = target.parentNode.firstChild; node; node = node.nextSibling) {
+            if (node.nodeName == "BLOCKQUOTE") {
+                break;
+            } else if (node.nodeType == Node.TEXT_NODE) {
+                // 旧レスNo.取得
+                let matches = node.nodeValue.match(/No\.(\d+)/);
+                if (matches) {
                     return matches[1];
                 }
+            } else if (node.nodeName == "INPUT" && node.value == "delete") {
+                // 旧削除チェックボックスからレスNo.取得
+                let name = node.getAttribute("name");
+                if (name) {
+                    let matches = name.match(/\d+/);
+                    if (matches) {
+                        return matches[0];
+                    }
+                }
+            } else if (node.nodeName == "SPAN" && node.className == "cno") {
+                // 新レスNo.取得（2019/11～）
+                return node.textContent.replace("No.", "");
             }
         }
 
@@ -305,6 +322,24 @@ function switchSubmitButton(){
     countTime();
 }
 
+function putDel(elem) {
+    if (!use_del_button) {
+        return false;
+    }
+    let cno = elem.querySelector(":scope > .cno");
+    if (!cno) {
+        return false;
+    }
+    let no = cno.textContent.replace("No.", "");
+    let del_elem = document.createElement("a");
+    del_elem.textContent = "del";
+    del_elem.className = "del";
+    del_elem.href = "javascript:void(0)";
+    del_elem.name = `del(${no})`;
+    elem.insertBefore(del_elem, cno.nextSibling);
+    return del_elem;
+}
+
 function hideRes(rtd) {
     if (rtd) {
         let hideButton = rtd.querySelector(":scope > .KOSHIAN_HideButton") || rtd.querySelector(":scope > .KOSHIAN_NGSwitch");
@@ -318,18 +353,24 @@ let last_process_index = 0;
 
 function process(beg, start = false){
     let end = 0;
-    let dels = document.querySelectorAll(".rtd > .del");
-    if (!dels) {
+    let rtds = document.getElementsByClassName("rtd");
+    if (!rtds.length) {
         if (start) {
             restoreDelStatus();
         }
         return;
     }
 
-    end = dels.length;
+    end = rtds.length;
 
     for(let i = beg; i < end; ++i){
-        dels[i].onclick = onClickDel;
+        let del_elem = rtds[i].querySelector(":scope > .del");
+        if (!del_elem) {
+            del_elem = putDel(rtds[i]);
+        }
+        if (del_elem) {
+            del_elem.onclick = onClickDel;
+        }
     }
 
     if (start) {
@@ -348,12 +389,12 @@ function process(beg, start = false){
                 return;
             }
             // スレ
-            let del = document.getElementsByClassName("del")[0];
-            if (del) {
-                let del_id = del.outerHTML.match(/del\((\d+)\)/);
+            let del_thre = document.querySelector(".thre > .del");
+            if (del_thre) {
+                let del_id = del_thre.outerHTML.match(/del\((\d+)\)/);
                 if (del_id && del_list.some(id => id == del_id[1])) {
-                    del.textContent = "del 送信済み";
-                    del.onclick = () => {return false;};
+                    del_thre.textContent = "del 送信済み";
+                    del_thre.onclick = () => {return false;};
                 }
             }
 
@@ -361,6 +402,7 @@ function process(beg, start = false){
                 return;
             }
             // レス
+            let dels = document.querySelectorAll(".rtd > .del");
             for (let i = beg; i < end; ++i) {
                 let del_id = dels[i].outerHTML.match(/del\((\d+)\)/);
                 if (del_id && del_list.some(id => id == del_id[1])) {
@@ -400,7 +442,13 @@ function main() {
     xml.send();
 
     // thre
-    document.getElementsByClassName("del")[0].onclick = onClickDel;
+    let del_thre = document.querySelector(".thre > .del");
+    if (!del_thre) {
+        del_thre = putDel(thre);
+    }
+    if (del_thre) {
+        del_thre.onclick = onClickDel;
+    }
 
     // rtd直下のdelだけを選択
     process(0, true);
@@ -478,6 +526,7 @@ function onSettingGot(result) {
     use_koshian_ng = safeGetValue(result.use_koshian_ng, DEFAULT_USE_KOSHIAN_NG);
     del_interval = safeGetValue(result.del_interval, DEFAULT_DEL_INTERVAL);
     use_srcdoc = safeGetValue(result.use_srcdoc, DEFAULT_USE_SRCDOC);
+    use_del_button = safeGetValue(result.use_del_button, DEFAULT_USE_DEL_BUTTON);
     last_del = safeGetValue(result.last_del, 0);
 
     main();

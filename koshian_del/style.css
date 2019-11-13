@@ -1,0 +1,11 @@
+
+a.del
+{
+    color: inherit;
+}
+
+a.del:hover
+{
+    color: red;
+    cursor: pointer;
+}
