@@ -18,6 +18,7 @@
         {
             "matches": ["*://*.2chan.net/*/res/*"],
             "js": ["res.js"],
+            "css":["style.css"],
             "all_frames": false
         }
     ],

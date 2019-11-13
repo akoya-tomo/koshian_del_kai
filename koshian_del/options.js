@@ -4,6 +4,7 @@ const DEFAULT_USE_CATALOG_NG = false;
 const DEFAULT_USE_KOSHIAN_NG = false;
 const DEFAULT_DEL_INTERVAL = 5500;
 const DEFAULT_USE_SRCDOC = false;
+const DEFAULT_USE_DEL_BUTTON = true;
 
 /* eslint indent: ["warn", 2] */
 
@@ -18,7 +19,8 @@ function saveOptions(e) {
     use_catalog_ng:document.getElementById("use_catalog_ng").checked,
     use_koshian_ng:document.getElementById("use_koshian_ng").checked,
     del_interval:document.getElementById("del_interval").value * 1000,
-    use_srcdoc:document.getElementById("use_srcdoc").checked
+    use_srcdoc:document.getElementById("use_srcdoc").checked,
+    use_del_button:document.getElementById("use_del_button").checked
   });
 }
 
@@ -29,6 +31,7 @@ function setCurrentChoice(result) {
   document.getElementById("use_koshian_ng").checked = safeGetValue(result.use_koshian_ng, DEFAULT_USE_KOSHIAN_NG);
   document.getElementById("del_interval").value = safeGetValue(result.del_interval, DEFAULT_DEL_INTERVAL) / 1000;
   document.getElementById("use_srcdoc").checked = safeGetValue(result.use_srcdoc, DEFAULT_USE_SRCDOC);
+  document.getElementById("use_del_button").checked = safeGetValue(result.use_del_button, DEFAULT_USE_DEL_BUTTON);
   document.getElementById("submit_button").addEventListener("click", saveOptions);
 }
 
