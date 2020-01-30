@@ -336,7 +336,12 @@ function putDel(elem) {
     del_elem.className = "del";
     del_elem.href = "javascript:void(0)";
     del_elem.name = `del(${no})`;
-    elem.insertBefore(del_elem, cno.nextSibling);
+    let quote_button = elem.getElementsByClassName("KOSHIAN_NumberButton")[0];
+    if (quote_button) {
+        elem.insertBefore(del_elem, quote_button.nextSibling);
+    } else {
+        elem.insertBefore(del_elem, cno.nextSibling);
+    }
     return del_elem;
 }
 
