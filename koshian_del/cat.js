@@ -14,12 +14,12 @@ let use_srcdoc = DEFAULT_USE_SRCDOC;
 let last_del = 0;
 
 function createCloseButton(text) {
-    let elem = document.createElement("input");
+    let elem = document.createElement("span");
 
-    elem.value = text;
-    elem.type = "button";
+    elem.className = "KOSHIAN_del_close";
     elem.onclick = onClickClose;
     elem.style.cssFloat = "right";
+    elem.textContent = text;
 
     return elem;
 }
@@ -28,13 +28,13 @@ class Del {
     constructor() {
         this.resno = "";
         this.popup = null;
-        this.close = createCloseButton("閉じる");
+        this.close = createCloseButton("×");
         this.iframe = null;
         this.url = null;
         this.form = null;
         this.target = null;
         this.timer = null;
-        this.checked_id = null;
+        this.checked_id = "110";
         this.client_x = null;
         this.client_y = null;
         this.submit = null;
@@ -63,26 +63,20 @@ class Del {
 
         this.iframe = document.createElement("iframe");
         this.iframe.src = "about:blank";
-        this.iframe.width = "300px";
-        this.iframe.height = "426px";
-        this.iframe.style.clear = "both";
+        this.iframe.width = "150px";
+        this.iframe.height = "42px";
+        this.iframe.style.cssFloat = "left";
         this.iframe.b = this.b;
 
-        this.url = document.createElement("div");
-        this.url.style.width = "230px";
-        this.url.style.fontSize = "10px";
-        this.url.style.cssFloat = "left";
-        this.url.style.wordBreak = "break-all";
-
-        this.popup.appendChild(this.url);
-        this.popup.appendChild(this.close);
-        this.popup.appendChild(document.createElement("BR"));
         this.popup.appendChild(this.iframe);
+        this.popup.appendChild(this.close);
 
         document.body.appendChild(this.popup);
     }
 
     show(resno, target, linkUrl) {
+        this.iframe.width = "150px";
+        this.iframe.height = "42px";
         this.resno = resno;
         let scrollX = document.documentElement.scrollLeft;
         let scrollY = document.documentElement.scrollTop;
@@ -125,6 +119,8 @@ class Del {
                                 // レスポンス内のリンクを削除
                                 anchor.parentNode.removeChild(anchor);
                             }
+                            this.iframe.width = "300px";
+                            this.iframe.height = Math.max(this.iframe.doc.documentElement.clientHeight, this.iframe.doc.documentElement.scrollHeight);
                             if (alert_time > 0) {
                                 this.timer = setTimeout(this.hide.bind(this), alert_time);
                             }
@@ -132,15 +128,6 @@ class Del {
 
                     } else {
                         this.hide();
-                    }
-
-                    // checkしたinputのidを記憶
-                    let inputs = this.iframe.doc.getElementsByTagName("input");
-                    for (let input of inputs) {
-                        if (input.checked) {
-                            this.checked_id = input.id;
-                            break;
-                        }
                     }
 
                     if (use_catalog_ng){
@@ -169,18 +156,18 @@ class Del {
                         iframe_body.append(this.form);
                     }
 
-                    // form内のtextをlabelに置換
+                    // form内のinputにidを付与
                     let inputs = this.form.getElementsByTagName("input");
                     for (let input of inputs) {
-                        let text = input.nextSibling;
-                        if (text && text.nodeType == Node.TEXT_NODE) {
+                        if (input.type == "radio" && input.name == "reason" && input.value) {
                             input.id = input.value;
-                            let label = this.iframe.doc.createElement("label");
-                            label.textContent = text.textContent;
-                            label.htmlFor = input.id;
-                            text.parentNode.insertBefore(label, text.nextSibling);
-                            text.remove();
                         }
+                    }
+
+                    // 削除理由を隠す
+                    let form_table = this.form.getElementsByTagName("table")[0];
+                    if (form_table) {
+                        form_table.style.display = "none";
                     }
                 }
                 if (!this.srcdoc) {
@@ -191,11 +178,20 @@ class Del {
                     }
                 }
 
-                // 前回checkしたinputにcheckを入れる
+                // input#110（荒らし・嫌がらせ・混乱の元）にcheckを入れる
                 if (this.checked_id) {
                     let checked_input = this.iframe.doc.getElementById(this.checked_id);
                     if (checked_input) {
                         checked_input.checked = true;
+                    } else {
+                        // input#110が無いときは最初の項目にcheckを入れる
+                        let form_inputs = this.form.getElementsByTagName("input");
+                        for (let form_input of form_inputs) {
+                            if (form_input.id && form_input.type == "radio" && form_input.name == "reason" && form_input.value) {
+                                form_input.checked = true;
+                                break;
+                            }
+                        }
                     }
                 }
 
@@ -211,7 +207,6 @@ class Del {
             this.iframe.srcdoc = this.srcdoc.replace(/<form action="del.php/, `<form action="${location.protocol}//${location.host}/del.php`).replace(/name="d" value="\d+"/, `name="d" value="${this.resno}"`);
         }
         this.iframe.src = `${location.protocol}//${location.host}/del.php?b=${this.iframe.b}&d=${this.resno}`;
-        this.url.textContent = this.iframe.src;
 
         if(cx < clientW/2){
             this.popup.style.left = `${scrollX + rect.left + rect.width}px`;
@@ -330,7 +325,7 @@ function switchSubmitButton(){
 function getCatalogResno() {
     let cattable = document.getElementById("cattable");
     if (cattable) {
-        let anchor = cattable.querySelector("td > a") || cattable.querySelector(".cu > a");
+        let anchor = cattable.querySelector("td > a");
         if (anchor && anchor.href) {
             let match = anchor.href.match(/res\/(\d+)\.htm/);
             if (match) {

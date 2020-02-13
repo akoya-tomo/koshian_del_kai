@@ -23,7 +23,7 @@ class Del {
         this.iframe = null;
         this.form = null;
         this.timer = null;
-        this.checked_id = null;
+        this.checked_id = "110";
         this.submit = null;
         this.interval_timer = null;
         this.srcdoc = null;
@@ -51,8 +51,8 @@ class Del {
 
         this.iframe = document.createElement("iframe");
         this.iframe.src = "about:blank";
-        this.iframe.width = "300px";
-        this.iframe.height = "426px";
+        this.iframe.width = "150px";
+        this.iframe.height = "42px";
         this.iframe.b = this.b;
 
         this.popup.appendChild(this.iframe);
@@ -62,9 +62,9 @@ class Del {
 
     show(resno, target) {
         this.iframe = this.popup.getElementsByTagName("iframe")[0];
+        this.iframe.width = "150px";
+        this.iframe.height = "42px";
         if (!this.iframe.b) {
-            this.iframe.width = "300px";
-            this.iframe.height = "426px";
             this.iframe.b = this.b;
         }
         this.resno = resno;
@@ -108,6 +108,8 @@ class Del {
                                 // レスポンス内のリンクを削除
                                 anchor.parentNode.removeChild(anchor);
                             }
+                            this.iframe.width = "300px";
+                            this.iframe.height = Math.max(this.iframe.doc.documentElement.clientHeight, this.iframe.doc.documentElement.scrollHeight);
                             let body = this.iframe.doc.getElementsByTagName("body")[0];
                             if (body && !body.textContent.match(/操作が早すぎます|理由がありません/)) {
                                 target.textContent = "del 送信済み";
@@ -149,15 +151,6 @@ class Del {
                         }
                     }
 
-                    // checkしたinputのidを記憶
-                    let inputs = this.iframe.doc.getElementsByTagName("input");
-                    for (let input of inputs) {
-                        if (input.checked) {
-                            this.checked_id = input.id;
-                            break;
-                        }
-                    }
-
                     return true;
                 };
 
@@ -169,18 +162,18 @@ class Del {
                         iframe_body.append(this.form);
                     }
 
-                    // form内のtextをlabelに置換
+                    // form内のinputにidを付与
                     let inputs = this.form.getElementsByTagName("input");
                     for (let input of inputs) {
-                        let text = input.nextSibling;
-                        if (text && text.nodeType == Node.TEXT_NODE) {
+                        if (input.type == "radio" && input.name == "reason" && input.value) {
                             input.id = input.value;
-                            let label = this.iframe.doc.createElement("label");
-                            label.textContent = text.textContent;
-                            label.htmlFor = input.id;
-                            text.parentNode.insertBefore(label, text.nextSibling);
-                            text.remove();
                         }
+                    }
+
+                    // 削除理由を隠す
+                    let form_table = this.form.getElementsByTagName("table")[0];
+                    if (form_table) {
+                        form_table.style.display = "none";
                     }
                 }
                 if (!this.srcdoc) {
@@ -191,11 +184,20 @@ class Del {
                     }
                 }
 
-                // 前回checkしたinputにcheckを入れる
+                // input#110（荒らし・嫌がらせ・混乱の元）にcheckを入れる
                 if (this.checked_id) {
                     let checked_input = this.iframe.doc.getElementById(this.checked_id);
                     if (checked_input) {
                         checked_input.checked = true;
+                    } else {
+                        // input#110が無いときは最初の項目にcheckを入れる
+                        let form_inputs = this.form.getElementsByTagName("input");
+                        for (let form_input of form_inputs) {
+                            if (form_input.id && form_input.type == "radio" && form_input.name == "reason" && form_input.value) {
+                                form_input.checked = true;
+                                break;
+                            }
+                        }
                     }
                 }
 
@@ -236,7 +238,14 @@ class Del {
     }
 
     static getResno(target) {
-        for (let node = target.parentNode.firstChild; node; node = node.nextSibling) {
+        let parent = target.parentNode;
+        let cno = parent.getElementsByClassName("cno")[0];
+        if (cno) {
+            // 新レスNo.取得（2019/11～）
+            return cno.textContent.replace("No.", "");
+        }
+
+        for (let node = parent.firstChild; node; node = node.nextSibling) {
             if (node.nodeName == "BLOCKQUOTE") {
                 break;
             } else if (node.nodeType == Node.TEXT_NODE) {
@@ -254,9 +263,6 @@ class Del {
                         return matches[0];
                     }
                 }
-            } else if (node.nodeName == "SPAN" && node.className == "cno") {
-                // 新レスNo.取得（2019/11～）
-                return node.textContent.replace("No.", "");
             }
         }
 
