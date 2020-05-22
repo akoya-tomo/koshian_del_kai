@@ -1,13 +1,7 @@
 
-.KOSHIAN_del_close
+.KOSHIAN_del_message
 {
-    cursor: pointer;
-    font-size: 21px;
-    font-weight: bold;
-    opacity: 0.2;
-}
-
-.KOSHIAN_del_close:hover
-{
-    opacity: 1;
+    color: red;
+    text-decoration: none;
+    cursor: auto;
 }

@@ -1,6 +1,6 @@
 ## <sub><img src="koshian_del/icons/icon-48.png"></sub> KOSHIAN delフォームをポップアップで開く 改
 このFirefoxアドオンはふたば☆ちゃんねるでdelフォームをポップアップで開く[Pachira](https://addons.mozilla.org/ja/firefox/user/anonymous-a0bba9187b568f98732d22d51c5955a6/)氏の[KOSHIAN delフォームをポップアップで開く](https://addons.mozilla.org/ja/firefox/addon/koshian-del%E3%83%95%E3%82%A9%E3%83%BC%E3%83%A0%E3%82%92%E3%83%9D%E3%83%83%E3%83%97%E3%82%A2%E3%83%83%E3%83%97%E3%81%A7%E9%96%8B%E3%81%8F/)の非公式改変版です。  
-カタログからスレのdelフォームをポップアップで開く機能をオリジナル版に追加しています。  
+del送信後の規制時間やdelしたスレ・レスを非表示にする機能をオリジナル版に追加しています。  
 
 ※このアドオンはWebExtensionアドオン対応のFirefox専用となります。  
 ※他のKOSHIAN改変版などのふたば支援ツールは[こちら](https://github.com/akoya-tomo/futaba_auto_reloader_K/wiki/)。  
@@ -9,18 +9,20 @@
 * オリジナルの機能（KOSHIAN delフォームをポップアップで開く）
   - スレ画面でdelフォームをポップアップで開く
 * 追加・変更された機能（KOSHIAN delフォームをポップアップで開く 改）
-  - カタログからスレのdelフォームをポップアップで開く機能  
-    カタログでdelをしたいスレのリンク（スレ画、無ければスレ本文）の上で右クリックしてコンテキストメニューを開き、「delフォームを開く」を選択するとdelフォームがポップアップします。  
+  - ~~カタログからスレのdelフォームをポップアップで開く機能~~  
+    ~~カタログでdelをしたいスレのリンク（スレ画、無ければスレ本文）の上で右クリックしてコンテキストメニューを開き、「delフォームを開く」を選択するとdelフォームがポップアップします。~~  
+    v2.9.0でふたば標準のプルダウンメニューからの削除依頼に統合しました。  
   - カタログでdelしたスレを非表示（要 [futaba catalog NG](https://greasyfork.org/ja/scripts/37565-futaba-catalog-ng/) v1.3以上）（デフォルト：無効）  
-    futaba catalog NGと連携してカタログでdelしたスレを非表示にします。NGの種類はfutaba catalog NGで「スレNG」にしたときと同じです。  
+    futaba catalog NGと連携してカタログで「削除依頼（del&NG）」したスレを非表示にします。NGの種類はfutaba catalog NGで「スレNG」にしたときと同じです。  
   - ~~delフォームを各板の項目内容で表示~~  
     ~~delフォームの項目内容が固定になっていたのを、各板の項目内容で表示するようにしました。~~  
     v2.8.0で削除理由の項目は無くなりました。  
   - del送信後の応答メッセージを表示（デフォルト：無効）  
     del送信後のサーバーからの応答メッセージを表示することができます。  
     また、メッセージの表示時間を設定して、メッセージを自動的に閉じることができます。（デフォルト：1000ミリ秒）  
-  - ピックアップしたスレからdelフォームを開く（要 [futaba thread highlighter K](https://greasyfork.org/ja/scripts/36639-futaba-thread-highlighter-k/)）  
-    futaba thread highlighter Kでピックアップしたスレからdelフォームをポップアップで開くことができます。  
+  - ~~ピックアップしたスレからdelフォームを開く（要 [futaba thread highlighter K](https://greasyfork.org/ja/scripts/36639-futaba-thread-highlighter-k/)）~~  
+    ~~futaba thread highlighter Kでピックアップしたスレからdelフォームをポップアップで開くことができます。~~  
+    v2.9.0でふたば標準のプルダウンメニューからの削除依頼に統合しました。  
   - del送信後の規制時間（デフォルト：5.5秒）  
     del送信後に次にdel送信が可能になるまでの規制時間を設定することができます。  
     規制中は「削除依頼をする」ボタンが無効になり、規制解除までの残り時間が表示されます。  
@@ -39,7 +41,7 @@
 
 ## インストール
 **GitHub**  
-[![インストールボタン](images/install_button.png "クリックでアドオンをインストール")](https://github.com/akoya-tomo/koshian_del_kai/releases/download/v2.8.0/koshian_del_kai-2.8.0-fx.xpi)
+[![インストールボタン](images/install_button.png "クリックでアドオンをインストール")](https://github.com/akoya-tomo/koshian_del_kai/releases/download/v2.9.0/koshian_del_kai-2.9.0-fx.xpi)
 
 ※「接続エラーのため、アドオンをダウンロードできませんでした。」と表示されてインストール出来ないときはインストールボタンを右クリックしてxpiファイルをダウンロードし、メニューのツール→アドオン（またはCtrl+Shift+A）で表示されたアドオンマネージャーのページにxpiファイルをドラッグ＆ドロップして下さい。  
 
@@ -50,15 +52,9 @@
 * アドオン（KOSHIAN リロード拡張（改）・赤福extended）無しでリロードしたときは開いているdelフォームが閉じます。  
 * 一度閉じたスレを再び開く、またはページをリロードしたときは「delしたレスを非表示」を有効にしていてもdelしたレスが表示されることがあります。  
 
-## Tips  
-* 「カタログでdelしたスレを非表示」が有効のとき、同じスレにdelとNG（本文NG or 画像NG）を両方実行したい  
-  「カタログでdelしたスレを非表示」が有効だとdelかNGのどちらかを実行するとスレが非表示になってしまい、もう片方が実行できません。  
-  以下の手順で設定を変更せずにdelとNGを両方実行することができます。  
-  1. 該当スレのリンクを右クリックして「delフォームを開く」を選択する  
-  2. delフォームを開いたままスレ内の\[NG\]ボタンからスレをNGにする  
-  3. 残ったdelフォームから「削除依頼をする」ボタンでdel送信する  
-
 ## 更新履歴
+* v2.9.0 2020-05-22
+  - カタログからのdel送信をふたば標準のプルダウンメニューからの削除依頼に統合
 * v2.8.0 2020-02-13
   - 削除理由の選択を削除
 * v2.7.1 2020-01-31

@@ -1,243 +1,101 @@
 const DEL_CLASS_NAME = "KOSHIAN_del";
-const DEL_POPUP_CLASS_NAME = "KOSHIAN_del_popup";
-const DEFAULT_POST_ALERT = false;
-const DEFAULT_ALERT_TIME = 1000;
 const DEFAULT_USE_CATALOG_NG = false;
 const DEFAULT_DEL_INTERVAL = 5500;
-const DEFAULT_USE_SRCDOC = false;
 const DEL_INTERVAL_OFFSET = 20;
-let post_alert = DEFAULT_POST_ALERT;
-let alert_time = DEFAULT_ALERT_TIME;
 let use_catalog_ng = DEFAULT_USE_CATALOG_NG;
 let del_interval = DEFAULT_DEL_INTERVAL;
-let use_srcdoc = DEFAULT_USE_SRCDOC;
 let last_del = 0;
-
-function createCloseButton(text) {
-    let elem = document.createElement("span");
-
-    elem.className = "KOSHIAN_del_close";
-    elem.onclick = onClickClose;
-    elem.style.cssFloat = "right";
-    elem.textContent = text;
-
-    return elem;
-}
 
 class Del {
     constructor() {
+        this.pdm = null;
         this.resno = "";
-        this.popup = null;
-        this.close = createCloseButton("×");
-        this.iframe = null;
-        this.url = null;
-        this.form = null;
         this.target = null;
         this.timer = null;
-        this.checked_id = "110";
-        this.client_x = null;
-        this.client_y = null;
-        this.submit = null;
-        this.interval_timer = null;
-        this.srcdoc = null;
-        this.has_trimmed_srcdoc = false;
-
-        this.create();
-        this.hide();
+        this.pdmsc_del = null;
+        this.pdmsc_ng = null;
+        this.message = null;
     }
 
-    create(){
-        let url_matches = location.href.match(/https?:\/\/(.+?)\/(.+?)\/futaba.php/);
-        if(!url_matches){
+    create(pdm){
+        this.target = null;
+        this.pdm = pdm;
+
+        let old_pdmsc = this.pdm.getElementsByClassName("KOSHIAN_del_pdmsc")[0];
+        if (old_pdmsc) {
+            old_pdmsc.remove();
+        }
+        let old_message = this.pdm.getElementsByClassName("KOSHIAN_del_message")[0];
+        if (old_message) {
+            old_message.remove();
+        }
+
+        this.resno = this.getDatano(this.pdm);
+        if (!this.resno) {
+            console.debug("KOSHIAN_del/cat.js/Del.create - no Del.resno");
+            return;
+        }
+        this.target = this.getTarget(this.resno);
+        if (!this.target) {
+            console.debug("KOSHIAN_del/cat.js/Del.create - no Del.target");
             return;
         }
 
-        this.b = url_matches[2];
+        this.pdmsc_ng = document.createElement("div");
+        this.pdmsc_ng.className = "pdmsc pdmcd KOSHIAN_del_pdmsc";
+        this.pdmsc_ng.textContent = "削除依頼(del&NG)";
+        this.pdmsc_ng.addEventListener("click", this.send.bind(this), false);
 
-        this.popup = document.createElement("div");
-        this.popup.className = DEL_POPUP_CLASS_NAME;
-        this.popup.style.position = "absolute";
-        this.popup.style.border = "solid 1px black";
-        this.popup.style.backgroundColor="#FFFFEE";
-        this.popup.style.zIndex = 202;
+        this.message = document.createElement("div");
+        this.message.className = "pdmsc pdmcd KOSHIAN_del_message";
+        this.message.style.display = "none";
 
-        this.iframe = document.createElement("iframe");
-        this.iframe.src = "about:blank";
-        this.iframe.width = "150px";
-        this.iframe.height = "42px";
-        this.iframe.style.cssFloat = "left";
-        this.iframe.b = this.b;
-
-        this.popup.appendChild(this.iframe);
-        this.popup.appendChild(this.close);
-
-        document.body.appendChild(this.popup);
-    }
-
-    show(resno, target, linkUrl) {
-        this.iframe.width = "150px";
-        this.iframe.height = "42px";
-        this.resno = resno;
-        let scrollX = document.documentElement.scrollLeft;
-        let scrollY = document.documentElement.scrollTop;
-        let rect = target.getBoundingClientRect();
-        let clientW = document.documentElement.clientWidth;
-        let cx = rect.x + rect.width/2; // center x
-
-        this.iframe.onload = () => {
-            this.iframe.onload = null;
-            this.iframe.doc = this.iframe.contentWindow.document;
-            this.form = this.iframe.doc.getElementsByTagName("form")[0];
-            if (this.form) {
-                this.form.onsubmit = () => {
-                    this.form.onsubmit = null;
-                    this.submit.disabled = true;
-                    this.submit.value = "送信中...";
-                    this.submit = null;
-                    // 最終del時刻を更新
-                    last_del = curTime();
-                    browser.storage.local.set({
-                        last_del:last_del
-                    });
-
-                    if(post_alert){
-                        this.iframe.onload = () => {
-                            this.iframe.onload = null;
-                            // 最終del時刻を更新してタイマーを再設定
-                            last_del = curTime();
-                            browser.storage.local.set({
-                                last_del:last_del
-                            });
-                            if (del.interval_timer) {
-                                clearInterval(del.interval_timer);
-                                del.interval_timer = null;
-                            }
-                            switchSubmitButton();
-
-                            let anchors = this.iframe.contentWindow.document.getElementsByTagName("a");
-                            for (let anchor of anchors) {
-                                // レスポンス内のリンクを削除
-                                anchor.parentNode.removeChild(anchor);
-                            }
-                            this.iframe.width = "300px";
-                            this.iframe.height = Math.max(this.iframe.doc.documentElement.clientHeight, this.iframe.doc.documentElement.scrollHeight);
-                            if (alert_time > 0) {
-                                this.timer = setTimeout(this.hide.bind(this), alert_time);
-                            }
-                        };
-
-                    } else {
-                        this.hide();
-                    }
-
-                    if (use_catalog_ng){
-                        target.classList.add(DEL_CLASS_NAME);
-                        document.dispatchEvent(new CustomEvent("KOSHIAN_del"));
-                    }
-
-                    // del id登録
-                    let url = linkUrl.match(/^https?:\/\/([^.]+\.2chan\.net\/[^/]+\/res\/\d+\.htm)$/);
-                    if (url) {
-                        browser.runtime.sendMessage({
-                            id: "koshian_del_add_del_response",
-                            url: url[1],
-                            del_id: resno
-                        });
-                    }
- 
-                    return true;
-                };
-
-                if (!this.srcdoc || !this.has_trimmed_srcdoc) {
-                    // iframe内のform以外のnodeを削除
-                    let iframe_body = this.iframe.doc.body;
-                    if (iframe_body) {
-                        iframe_body.innerHTML = "";
-                        iframe_body.append(this.form);
-                    }
-
-                    // form内のinputにidを付与
-                    let inputs = this.form.getElementsByTagName("input");
-                    for (let input of inputs) {
-                        if (input.type == "radio" && input.name == "reason" && input.value) {
-                            input.id = input.value;
-                        }
-                    }
-
-                    // 削除理由を隠す
-                    let form_table = this.form.getElementsByTagName("table")[0];
-                    if (form_table) {
-                        form_table.style.display = "none";
-                    }
+        let pdmscs = this.pdm.getElementsByClassName("pdmsc");
+        for (let pdmsc of pdmscs) {
+            if (pdmsc.textContent == "削除依頼(del)") {
+                this.pdmsc_del = pdmsc;
+                if (use_catalog_ng) {
+                    this.pdmsc_del.parentNode.insertBefore(this.pdmsc_ng, this.pdmsc_del.nextSibling);
                 }
-                if (!this.srcdoc) {
-                    let iframe_html = this.iframe.doc.documentElement;
-                    if (iframe_html) {
-                        this.srcdoc = iframe_html.outerHTML;
-                        this.has_trimmed_srcdoc = true;
-                    }
-                }
-
-                // input#110（荒らし・嫌がらせ・混乱の元）にcheckを入れる
-                if (this.checked_id) {
-                    let checked_input = this.iframe.doc.getElementById(this.checked_id);
-                    if (checked_input) {
-                        checked_input.checked = true;
-                    } else {
-                        // input#110が無いときは最初の項目にcheckを入れる
-                        let form_inputs = this.form.getElementsByTagName("input");
-                        for (let form_input of form_inputs) {
-                            if (form_input.id && form_input.type == "radio" && form_input.name == "reason" && form_input.value) {
-                                form_input.checked = true;
-                                break;
-                            }
-                        }
-                    }
-                }
-
-                this.iframe.height = Math.max(this.iframe.doc.documentElement.clientHeight, this.iframe.doc.documentElement.scrollHeight);
-
-                this.submit = this.form.querySelector("input[type='submit']");
-                if (this.submit) {
-                    switchSubmitButton();
-                }
+                this.pdmsc_del.parentNode.insertBefore(this.message, this.pdmsc_del.nextSibling);
+                countTime();
+                return;
             }
-        };
-        if (use_srcdoc && this.srcdoc) {
-            this.iframe.srcdoc = this.srcdoc.replace(/<form action="del.php/, `<form action="${location.protocol}//${location.host}/del.php`).replace(/name="d" value="\d+"/, `name="d" value="${this.resno}"`);
         }
-        this.iframe.src = `${location.protocol}//${location.host}/del.php?b=${this.iframe.b}&d=${this.resno}`;
-
-        if(cx < clientW/2){
-            this.popup.style.left = `${scrollX + rect.left + rect.width}px`;
-            this.popup.style.right = null;
-        }else{
-            this.popup.style.left = null;
-            this.popup.style.right = `${clientW - scrollX - rect.left}px`;
-        }
-        this.popup.style.top = `${scrollY + rect.top}px`;
-        this.popup.style.display = "block";
+        console.debug("KOSHIAN_del/cat.js/Del.create - pdmsc(del) not found");
     }
 
-    hide() {
-        if (this.timer) {
-            clearTimeout(this.timer);
-            this.timer = null;
+    send(e) {
+        e.stopPropagation();
+        if (this.pdmsc_del) {
+            this.pdmsc_del.click();
+            return;
         }
-        this.popup.style.display = "none";
-        if (this.iframe.srcdoc) {
-            this.iframe.srcdoc = "";
-        }
-        this.iframe.removeAttribute("srcdoc");
-        this.iframe.src = "about:blank";
-        this.submit = null;
+        console.debug("KOSHIAN_del/cat.js/Del.send - pdmsc(del) not found");
     }
 
-    isHide() {
-        return this.popup.style.display == "none";
+
+    getDatano(pdm) {
+        return pdm.getAttribute("data-no");
     }
 
-    static getResno(linkUrl) {
+    getTarget(no) {
+        let cattable = document.getElementById("cattable");
+        if (!cattable) {
+            console.debug("KOSHIAN_del/cat.js/Del.getTarget - #cattable not found");
+            return;
+        }
+        let anchors = cattable.getElementsByTagName("a");
+        for (let anchor of anchors) {
+            let resno = del.getResno(anchor.href);
+            if (resno && resno == no) {
+                return anchor.closest("td");
+            }
+        }
+        console.debug("KOSHIAN_del/cat.js/Del.getTarget - target not found");
+    }
+
+    getResno(linkUrl) {
         let matches = linkUrl.match(/\/([0-9]+).htm/);
         if (matches != null) {
             return matches[1];
@@ -245,46 +103,9 @@ class Del {
 
         return "";
     }
-
-    static init(){
-
-    }
 }
 
 let del;
-
-function onClickDel(linkUrl) {
-    let resno = Del.getResno(linkUrl);
-    if (resno == "") {
-        return;
-    }
-    if (!del.target && del.client_x !== null && del.client_y !== null) {
-        let target = document.elementFromPoint(del.client_x, del.client_y);
-        if (!target) {
-            return;
-        }
-        let parent = target.parentElement;
-        if (parent && (parent.tagName == "A" || parent.hasAttribute("koshian_index") || target.nodeName == "A")) {
-            for (let elm = parent.parentElement; elm; elm = elm.parentElement) {
-                if (elm.tagName == "TD" || elm.className == "GM_fth_pickuped" || elm.className == "GM_fth_opened" || elm.classList.contains("cs")) {
-                    del.target = elm;
-                    break;
-                }
-            }
-        }
-    }
-    if (!del.target) {
-        return;
-    }
-    
-    if(del.isHide() || del.resno != resno){
-        del.show(resno, del.target, linkUrl);
-    }
-}
-
-function onClickClose() {
-    del.hide();
-}
 
 function curTime(){
     let date = new Date();
@@ -299,41 +120,39 @@ function countTime(){
     let remain = getRemain();
 
     if (remain > 0) {
-        if (del.submit) {
-            del.submit.disabled = true;
-            del.submit.value = `残り ${Math.ceil(remain/1000)}秒`;
+        if (del.pdmsc_del) {
+            del.pdmsc_del.style.display = "none";
+        }
+        if (del.pdmsc_ng) {
+            del.pdmsc_ng.style.display = "none";
+        }
+        if (del.message) {
+            del.message.style.display = "";
+            del.message.textContent = `あと ${Math.ceil(remain/1000)}秒`;
         }
     } else {
-        if (del.submit) {
-            del.submit.disabled = false;
-            del.submit.value = `削除依頼をする`;
+        if (del.pdmsc_del) {
+            del.pdmsc_del.style.display = "";
         }
-        if (del.interval_timer) {
-            clearInterval(del.interval_timer);
-            del.interval_timer = null;
+        if (del.pdmsc_ng) {
+            del.pdmsc_ng.style.display = "";
+        }
+        if (del.message) {
+            del.message.style.display = "none";
+            del.message.textContent = "";
+        }
+        if (del.timer) {
+            clearInterval(del.timer);
+            del.timer = null;
         }
     }
 }
 
-function switchSubmitButton(){
-    if (!del.interval_timer) {
-        del.interval_timer = setInterval(countTime, 500);
+function hideDelButton(){
+    if (!del.timer) {
+        del.timer = setInterval(countTime, 100);
     }
     countTime();
-}
-
-function getCatalogResno() {
-    let cattable = document.getElementById("cattable");
-    if (cattable) {
-        let anchor = cattable.querySelector("td > a");
-        if (anchor && anchor.href) {
-            let match = anchor.href.match(/res\/(\d+)\.htm/);
-            if (match) {
-                return match[1];
-            }
-        }
-    }
-    return null;
 }
 
 function main() {
@@ -344,47 +163,61 @@ function main() {
 
     del = new Del();
 
-    let cat_resno = getCatalogResno();
-    if (cat_resno) {
-    // delフォームを取得
-        let xml = new XMLHttpRequest();
-        xml.open("GET", `${location.protocol}//${location.host}/del.php?b=${del.b}&d=${cat_resno}`);
-        xml.responseType = "document";
-        xml.onload = () => {
-            if (xml.status != 200) {
-                return;
-            }
-
-            let html = xml.responseXML.getElementsByTagName("html")[0];
-            if (html) {
-                del.srcdoc = html.outerHTML;
-            }
-        };
-        xml.send();
+    let pdm = document.getElementById("pdm");
+    if (pdm) {
+        del.create(pdm);
     }
 
-    document.addEventListener("contextmenu", getTargetElement, false);
+    // プルダウンメニュー監視
+    let target = document.body;
+    let config = { childList: true };
+    let observer = new MutationObserver((mutations) => {
+        mutations.forEach((mutation) => {
+            let nodes = mutation.addedNodes;
+            for (let node of nodes) {
+                if (node.id == "pdm") {
+                    del.create(node);
 
-    browser.runtime.onMessage.addListener(request => {
-        onClickDel(request.linkUrl);
+                    // 「登録しました」(.pddtipc)監視
+                    let target = node;
+                    let config = { childList: true};
+                    let observer = new MutationObserver((mutations) => {
+                        mutations.forEach((mutation) => {
+                            let nodes = mutation.addedNodes;
+                            for (let node of nodes) {
+                                if (node.classList.contains("pddtipc")) {
+                                    // 最終del時刻を更新
+                                    last_del = curTime();
+                                    browser.storage.local.set({
+                                        last_del:last_del
+                                    });
+                                    hideDelButton();
+                                    if (use_catalog_ng) {
+                                        if (del.target) {
+                                            del.target.classList.add(DEL_CLASS_NAME);
+                                            document.dispatchEvent(new CustomEvent("KOSHIAN_del"));
+                                            del.target = null;
+                                        } else {
+                                            console.debug("KOSHIAN_del/cat.js/main - no Del.target");
+                                        }
+                                    }
+                                }
+                            }
+                        });
+                    });
+                    observer.observe(target, config);
+                }
+            }
+            nodes = mutation.removedNodes;
+            for (let node of nodes) {
+                if (node.id == "pdm") {
+                    del.message = null;
+                }
+            }
+        });
     });
-}
+    observer.observe(target, config);
 
-function getTargetElement(e) {
-    del.client_x = null;
-    del.client_Y = null;
-    let parent = e.target.parentElement;
-    if (parent && (parent.tagName == "A" || parent.hasAttribute("koshian_index") || e.target.nodeName == "A")) {
-        for (let elm = parent.parentElement; elm; elm = elm.parentElement) {
-            if (elm.tagName == "TD" || elm.className == "GM_fth_pickuped" || elm.className == "GM_fth_opened" || elm.classList.contains("cs")) {
-                del.target = elm;
-                return;
-            }
-        }
-    }
-    del.target = null;
-    del.client_x = e.clientX;
-    del.client_y = e.clientY;
 }
 
 function safeGetValue(value, default_value) {
@@ -395,11 +228,8 @@ function onError(error) {   // eslint-disable-line no-unused-vars
 }
 
 function onSettingGot(result) {
-    post_alert = safeGetValue(result.post_alert, DEFAULT_POST_ALERT);
-    alert_time = safeGetValue(result.alert_time, DEFAULT_ALERT_TIME);
     use_catalog_ng = safeGetValue(result.use_catalog_ng, DEFAULT_USE_CATALOG_NG);
     del_interval = safeGetValue(result.del_interval, DEFAULT_DEL_INTERVAL);
-    use_srcdoc = safeGetValue(result.use_srcdoc, DEFAULT_USE_SRCDOC);
     last_del = safeGetValue(result.last_del, 0);
 
     main();
@@ -410,12 +240,9 @@ function onSettingChanged(changes, areaName) {
         return;
     }
 
-    if (changes.post_alert) {
-        post_alert = safeGetValue(changes.post_alert.newValue, post_alert);
-        alert_time = safeGetValue(changes.alert_time.newValue, alert_time);
+    if (changes.use_catalog_ng) {
         use_catalog_ng = safeGetValue(changes.use_catalog_ng.newValue, use_catalog_ng);
         del_interval = safeGetValue(changes.del_interval.newValue, del_interval);
-        use_srcdoc = safeGetValue(changes.use_srcdoc.newValue, use_srcdoc);
     }
     if (changes.last_del) {
         last_del = safeGetValue(changes.last_del.newValue, last_del);
