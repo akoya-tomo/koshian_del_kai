@@ -30,7 +30,7 @@
         "page": "options.html"
     },
     "permissions": [
-        "storage", "contextMenus"
+        "storage"
     ],
     "applications": {
         "gecko": {
