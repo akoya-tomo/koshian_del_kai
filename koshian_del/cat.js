@@ -15,6 +15,7 @@ class Del {
         this.pdmsc_del = null;
         this.pdmsc_ng = null;
         this.message = null;
+        this.sending = false;
     }
 
     create(pdm){
@@ -68,6 +69,7 @@ class Del {
     send(e) {
         e.stopPropagation();
         if (this.pdmsc_del) {
+            this.sending = true;
             this.pdmsc_del.click();
             return;
         }
@@ -192,7 +194,8 @@ function main() {
                                         last_del:last_del
                                     });
                                     hideDelButton();
-                                    if (use_catalog_ng) {
+                                    if (use_catalog_ng && del.sending) {
+                                        del.sending = false;
                                         if (del.target) {
                                             del.target.classList.add(DEL_CLASS_NAME);
                                             document.dispatchEvent(new CustomEvent("KOSHIAN_del"));
@@ -212,6 +215,7 @@ function main() {
             for (let node of nodes) {
                 if (node.id == "pdm") {
                     del.message = null;
+                    del.sending = false;
                 }
             }
         });
