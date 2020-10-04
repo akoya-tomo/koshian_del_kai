@@ -211,8 +211,9 @@ class Del {
         };
         if (use_srcdoc && this.srcdoc) {
             this.iframe.srcdoc = this.srcdoc.replace(/<form action="del.php/, `<form action="${location.protocol}//${location.host}/del.php`).replace(/name="d" value="\d+"/, `name="d" value="${this.resno}"`);
+        } else {
+            this.iframe.src = `${location.protocol}//${location.host}/del.php?b=${this.iframe.b}&d=${this.resno}`;
         }
-        this.iframe.src = `${location.protocol}//${location.host}/del.php?b=${this.iframe.b}&d=${this.resno}`;
 
         this.popup.style.left = `${scrollX + rect.left + rect.width}px`;
         this.popup.style.top = `${scrollY + rect.top}px`;
