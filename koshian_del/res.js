@@ -511,7 +511,7 @@ function main() {
             }
             status = target.textContent;
             if (status == "・・・") {
-                del.hide();
+                //del.hide();
                 reloading = true;
             } else if (reloading && status.endsWith("頃消えます")) {
                 process(last_process_index);
